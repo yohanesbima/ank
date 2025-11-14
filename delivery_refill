@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <base target="_top">
+    <?!= include('css'); ?>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <style>
+        body {
+            font-family: "Inter", sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* FIXED HEADER */
+        .header-fixed {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background: white;
+            padding: 14px;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.06);
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d0d0d0;
+            font-size: 14px;
+        }
+
+        .btn-add {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 9px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-delete {
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #submitBtn {
+            background: #6b4f35;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 700;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        table th,
+        table td {
+            padding: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        table th {
+            background: #fafafa;
+            font-weight: 700;
+        }
+
+        .accordion {
+            background: #007bff;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 14px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .panel {
+            display: none;
+            padding-top: 12px;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* IMPORTANT: container must be relative for sticky column */
+/* CONTAINER */
+.history-scroll {
+  max-height: 340px;
+  overflow: auto;
+  position: relative;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  background: white;
+}
+
+/* BASE TABLE */
+#historyTable {
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* HEADER STICKY (top freeze) */
+#historyTable thead th {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  z-index: 50;
+  padding: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+/* FIRST COLUMN STICKY LEFT (column freeze) */
+#historyTable th:first-child,
+#historyTable td:first-child {
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  z-index: 40;
+  border-right: 1px solid #f0f0f0;
+}
+
+/* FREEZE TOP + LEFT for DATE CELL */
+#historyTable tbody td:first-child {
+  z-index: 30;
+}
+
+/* ZEBRA */
+#historyTable tbody tr:nth-child(odd) {
+  background: #fafafa;
+}
+#historyTable tbody tr:nth-child(even) {
+  background: #ffffff;
+}
+
+/* HOVER */
+#historyTable tbody tr:hover {
+  background: #e9f2ff !important;
+}
+
+
+        /* Cell styling */
+        #historyTable td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+
+        /* Fade-in row */
+        .new-row {
+            animation: fadeIn 0.35s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* TOAST SUCCESS */
+        .toast-success {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #4caf50;
+            color: white;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: toastSlide 0.45s ease forwards;
+            z-index: 9999;
+        }
+
+        @keyframes toastSlide {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media(max-width:600px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="toastContainer"></div>
+
+    <div class="header-fixed">Form Refill Product</div>
+
+    <div class="container">
+
+        <div class="grid-2">
+            <div>
+                <label>Outlet</label>
+                <select id="outletSelect"></select>
+            </div>
+
+            <div>
+                <label>Nama Admin</label>
+                <select id="adminList"></select>
+            </div>
+
+            <div>
+                <label>Nama Rider</label>
+                <select id="riderList"></select>
+            </div>
+
+            <div>
+                <label>&nbsp;</label>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-add" onclick="addRow()" style="flex:1">+ Produk</button>
+                    <button class="btn-add" onclick="resetProducts()" style="flex:1;background:#ff9800">Reset</button>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin:12px 0 6px;">Daftar Produk</h3>
+
+        <table id="refillTable">
+            <thead>
+                <tr>
+                    <th style="width:45%">Produk</th>
+                    <th style="width:15%">Qty</th>
+                    <th style="width:25%">Catatan</th>
+                    <th style="width:15%">Aksi</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <p id="totalQtyDisplay" style="font-weight:700; margin-top:6px;">Total Qty: 0</p>
+
+        <button id="submitBtn" onclick="submitRefill()">Simpan Refill</button>
+
+        <button class="accordion" onclick="toggleAccordion(this)">📄 Lihat Histori Refill</button>
+
+        <div class="panel" id="historyPanel">
+            <div style="margin-top:8px;">
+
+                <div class="filter-row">
+                    <select id="filterRider"></select>
+                    <input type="date" id="startDate">
+                    <input type="date" id="endDate">
+                </div>
+
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-add" onclick="loadHistory()" style="background:#007bff;">🔍 Filter</button>
+                    <button class="btn-add" onclick="resetHistoryFilters()" style="background:#6b4f35;">Reset</button>
+                </div>
+
+                <div class="history-scroll">
+                    <table id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Outlet</th>
+                                <th>Admin</th>
+                                <th>Rider</th>
+                                <th>Produk</th>
+                                <th>Qty</th>
+                                <th>Catatan</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <script>
+        let masterData = {};
+        let products = [];
+        let userInfo = {};
+
+        /* LOAD USER */
+        document.addEventListener("DOMContentLoaded", () => {
+            google.script.run.withSuccessHandler(info => {
+                userInfo = info;
+                initPage();
+            }).getUserLoginInfo();
+        });
+
+        /* INIT PAGE */
+        function initPage() {
+            google.script.run.withSuccessHandler(data => {
+
+                masterData = data;
+                products = data.products || [];
+
+                setupOutletDropdown(data);
+                setupAdminDropdown(data);
+                setupRiderDropdownInitial(data);
+
+                document.getElementById("outletSelect")
+                    .addEventListener("change", populateRidersDropdown);
+
+                // populateRidersDropdown();
+                setTodayDate();
+                resetProducts();
+                loadHistory();
+
+            }).getMasterData();
+        }
+
+        /* SETUP OUTLET */
+        function setupOutletDropdown(data) {
+
+            const outletEl = document.getElementById("outletSelect");
+            outletEl.innerHTML = "";
+            outletEl.append(new Option("— Pilih Outlet —", ""));
+
+            if (userInfo.role === "admin") {
+                ["Rawamangun", "Ciledug"].forEach(o => outletEl.append(new Option(o, o)));
+            } else {
+                (data.outlets || [])
+                    .filter(Boolean)
+                    .sort((a, b) => a.localeCompare(b))
+                    .forEach(o => outletEl.append(new Option(o, o)));
+            }
+        }
+
+        /* SETUP ADMIN */
+        function setupAdminDropdown(data) {
+
+            const adminList = document.getElementById("adminList");
+            adminList.innerHTML = "";
+            adminList.append(new Option("— Pilih Admin —", ""));
+
+            (data.admins || [])
+                .slice()
+                .sort((a, b) => a.localeCompare(b))
+                .forEach(a => adminList.append(new Option(a, a)));
+
+            if (userInfo.role === "admin") {
+                adminList.value = userInfo.fullname;
+                adminList.disabled = true;
+            }
+        }
+
+        /* SETUP RIDER (FIRST LOAD) */
+        function setupRiderDropdownInitial(data) {
+
+            const riderList = document.getElementById("riderList");
+            const filterRider = document.getElementById("filterRider");
+
+            riderList.innerHTML = "";
+            filterRider.innerHTML = "";
+            filterRider.append(new Option("— Semua Rider —", ""));
+
+            if (userInfo.role === "admin") {
+                riderList.append(new Option("— Pilih Outlet dulu —", ""));
+                return;
+            }
+
+            if (userInfo.role === "rider") {
+
+                const meta = data.ridersWithMeta || [];
+                const loginName = (userInfo.fullname || "").trim().toLowerCase();
+
+                const me = meta.find(x => {
+                    const rname = (x.name || "").trim().toLowerCase();
+                    return (
+                        rname === loginName ||
+                        loginName.includes(rname) ||
+                        rname.includes(loginName)
+                    );
+                });
+
+                const myOutlet = me ? me.outlet : "";
+
+                const outletEl = document.getElementById("outletSelect");
+                outletEl.innerHTML = "";
+                outletEl.append(new Option(myOutlet, myOutlet));
+                outletEl.disabled = true;
+
+                riderList.innerHTML = "";
+                riderList.append(new Option(userInfo.fullname, userInfo.fullname));
+                riderList.disabled = true;
+
+                filterRider.style.display = "none";
+            }
+        }
+
+        /* WIB DATE */
+        function setTodayDate() {
+            const now = new Date();
+            const wib = new Date(now.getTime() + 7 * 3600000);
+            const t = wib.toISOString().split("T")[0];
+            document.getElementById("startDate").value = t;
+            document.getElementById("endDate").value = t;
+        }
+
+        /* POPULATE RIDER DROPDOWN */
+        function populateRidersDropdown() {
+
+            if (userInfo.role === "rider") return; // already locked
+
+            const outlet = (document.getElementById("outletSelect").value || "")
+                .trim().toLowerCase();
+
+            const rlist = document.getElementById("riderList");
+            const fr = document.getElementById("filterRider");
+
+            const meta = masterData.ridersWithMeta || [];
+
+            const filtered = meta.filter(r => {
+                const status = (r.status || "").trim().toLowerCase();
+                const rOutlet = (r.outlet || "").trim().toLowerCase();
+                return status === "aktif" && (!outlet || rOutlet === outlet);
+            }).sort((a, b) => a.name.localeCompare(b.name));
+
+            rlist.innerHTML = "";
+            rlist.append(new Option("— Pilih Rider —", ""));
+            rlist.disabled = filtered.length === 0;
+
+            filtered.forEach(r => rlist.append(new Option(r.name, r.name)));
+
+            if (filtered.length === 1) rlist.value = filtered[0].name;
+
+            fr.innerHTML = "";
+            fr.append(new Option("— Semua Rider —", ""));
+            filtered.forEach(r => fr.append(new Option(r.name, r.name)));
+        }
+
+        /* ADD ROW PRODUCT */
+        function addRow() {
+
+            const tbody = document.querySelector("#refillTable tbody");
+            const used = [...document.querySelectorAll(".productSelect")].map(x => x.value);
+
+            const available = products.filter(p => !used.includes(p.product));
+            if (!available.length) return Swal.fire("Semua produk sudah ditambahkan", "", "info");
+
+            const tr = document.createElement("tr");
+            tr.classList.add("new-row");
+
+            const select = document.createElement("select");
+            select.className = "productSelect";
+            available.sort((a, b) => a.product.localeCompare(b.product))
+                .forEach(p => select.append(new Option(p.product, p.product)));
+
+            const qty = document.createElement("input");
+            qty.type = "number"; qty.min = "1"; qty.value = "1";
+            qty.className = "qtyInput";
+            qty.oninput = updateTotalQty;
+
+            const note = document.createElement("input");
+            note.type = "text"; note.placeholder = "Catatan...";
+            note.className = "noteInput";
+
+            const del = document.createElement("button");
+            del.className = "btn-delete";
+            del.textContent = "X";
+            del.onclick = () => { tr.remove(); updateTotalQty(); };
+
+            const td1 = document.createElement("td"); td1.append(select);
+            const td2 = document.createElement("td"); td2.append(qty);
+            const td3 = document.createElement("td"); td3.append(note);
+            const td4 = document.createElement("td"); td4.append(del);
+
+            tr.append(td1, td2, td3, td4);
+
+            tbody.append(tr);
+
+            refreshProductOptions();
+            updateTotalQty();
+        }
+
+        /* NO DUPLICATE */
+        function refreshProductOptions() {
+            const selects = document.querySelectorAll(".productSelect");
+            const chosen = [...selects].map(s => s.value);
+
+            selects.forEach(s => {
+                const current = s.value;
+                s.innerHTML = "";
+
+                products.forEach(p => {
+                    if (chosen.includes(p.product) && p.product !== current) return;
+                    s.append(new Option(p.product, p.product));
+                });
+
+                s.value = current;
+            });
+        }
+
+        /* RESET FORM */
+        function resetProducts() {
+
+            document.querySelector("#refillTable tbody").innerHTML = "";
+            addRow();
+            updateTotalQty();
+
+            const btn = document.getElementById("submitBtn");
+            btn.disabled = false;
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+        }
+
+        /* TOTAL QTY */
+        function updateTotalQty() {
+            const qtys = [...document.querySelectorAll(".qtyInput")]
+                .map(q => Number(q.value) || 0);
+            const total = qtys.reduce((a, b) => a + b, 0);
+            document.getElementById("totalQtyDisplay").textContent = "Total Qty: " + total;
+        }
+
+        /* SUBMIT REFILL */
+        function submitRefill() {
+
+            const outlet = document.getElementById("outletSelect").value;
+            const admin = document.getElementById("adminList").value;
+            const rider = document.getElementById("riderList").value;
+            const btn = document.getElementById("submitBtn");
+
+            if (!outlet) return Swal.fire("Pilih outlet", "", "warning");
+            if (!admin) return Swal.fire("Pilih admin", "", "warning");
+            if (!rider) return Swal.fire("Pilih rider", "", "warning");
+
+            // disable tombol full
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+
+            const rows = [...document.querySelectorAll("#refillTable tbody tr")];
+
+            const items = rows.map(r => ({
+                product: r.querySelector(".productSelect").value,
+                qty: r.querySelector(".qtyInput").value,
+                note: r.querySelector(".noteInput").value || ""
+            }));
+
+            Swal.fire({
+                title: "Menyimpan...",
+                didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false
+            });
+
+            google.script.run.withSuccessHandler(() => {
+
+                Swal.close();
+                showToast("Refill berhasil disimpan!");
+
+                // tunda reset agar tombol tetap disabled dulu
+                setTimeout(() => {
+                    resetProducts();
+                    loadHistory();
+                }, 99000000);
+
+            }).saveRefillData({
+                outlet, adminName: admin, riderName: rider, items
+            });
+        }
+
+        /* TOAST SUCCESS */
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.className = "toast-success";
+            toast.textContent = message;
+
+            document.getElementById("toastContainer").appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = "opacity .3s";
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 1800);
+        }
+
+        /* HISTORY */
+        function toggleAccordion(a) {
+            a.classList.toggle("active");
+            const p = document.getElementById("historyPanel");
+            p.style.display = p.style.display === "block" ? "none" : "block";
+        }
+
+        function resetHistoryFilters() {
+            setTodayDate();
+            document.getElementById("filterRider").value = "";
+            loadHistory();
+        }
+
+        function loadHistory() {
+            const s = document.getElementById("startDate").value;
+            const e = document.getElementById("endDate").value;
+            const f = document.getElementById("filterRider").value;
+
+            Swal.fire({ title: "Memuat...", didOpen: () => Swal.showLoading() });
+
+            google.script.run.withSuccessHandler(rows => {
+                Swal.close();
+
+                const tbody = document.querySelector("#historyTable tbody");
+                tbody.innerHTML = "";
+
+                if (!rows.length) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:12px;">Tidak ada data</td></tr>`;
+                    return;
+                }
+
+                rows.forEach(r => {
+                    if (userInfo.role === "admin" && f && r.rider !== f) return;
+                    if (userInfo.role === "rider" && r.rider !== userInfo.fullname) return;
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+        <td>${r.date}</td>
+        <td>${r.outlet}</td>
+        <td>${r.admin}</td>
+        <td>${r.rider}</td>
+        <td>${r.product}</td>
+        <td>${r.qty}</td>
+        <td>${r.notes || ""}</td>`;
+                    tbody.appendChild(tr);
+                });
+
+            }).getRefillHistory(s, e, userInfo.role, userInfo.fullname);
+        }
+
+    </script>
+</body>
+
+</html>
