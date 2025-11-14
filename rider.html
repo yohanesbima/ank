@@ -245,7 +245,7 @@
       <!-- BOTTOM INPUTS -->
       <div class="bottom-inputs">
         <div class="input-group"><label>Cash Diterima</label><input type="text" id="cashDiterima" class="numeric"></div>
-        <div class="input-group"><label>Cashbon</label><input type="text" id="cashbon" class="numeric"></div>
+        <div class="input-group"><label>Cashbon</label><input type="text" id="cashbon" class="numeric" value="0"></div>
         <div class="input-group"><label>Minus</label><input type="text" id="minus" class="numeric" readonly></div>
       </div>
 
@@ -363,18 +363,52 @@
       });
 
       /* ========== Keyboard nav (unchanged) ========== */
+     /* ======================================================
+         🔥 PATCH NAVIGASI ARROW (UP/DOWN/LEFT/RIGHT + ENTER)
+         ====================================================== */
       document.addEventListener("keydown", e => {
         const active = document.activeElement;
         if(!active.matches("input,textarea")) return;
-        const cells = Array.from(document.querySelectorAll("#tableBody input, #tableBody textarea"));
-        const i = cells.indexOf(active);
-        let next = null;
-        if(e.key === "ArrowRight") next = cells[i+1];
-        else if(e.key === "ArrowLeft") next = cells[i-1];
-        else if(e.key === "ArrowDown" || e.key === "Enter") next = cells[i+13];
-        else if(e.key === "ArrowUp") next = cells[i-13];
-        if(next){ e.preventDefault(); next.focus(); next.select(); }
+
+        const row   = active.closest("tr");
+        if(!row) return;
+
+        const allRows = Array.from(document.querySelectorAll("#tableBody tr"));
+        const rowIndex = allRows.indexOf(row);
+
+        const cellsInRow = Array.from(row.querySelectorAll("input,textarea"));
+        const colIndex = cellsInRow.indexOf(active);
+
+        let target = null;
+
+        if(e.key==="ArrowRight"){
+          target = cellsInRow[colIndex+1];
+        }
+        else if(e.key==="ArrowLeft"){
+          target = cellsInRow[colIndex-1];
+        }
+        else if(e.key==="ArrowDown" || e.key==="Enter"){
+          const nextRow = allRows[rowIndex+1];
+          if(nextRow){
+            const nextCells = Array.from(nextRow.querySelectorAll("input,textarea"));
+            target = nextCells[colIndex] || nextCells[nextCells.length-1];
+          }
+        }
+        else if(e.key==="ArrowUp"){
+          const prevRow = allRows[rowIndex-1];
+          if(prevRow){
+            const prevCells = Array.from(prevRow.querySelectorAll("input,textarea"));
+            target = prevCells[colIndex] || prevCells[prevCells.length-1];
+          }
+        }
+
+        if(target){
+          e.preventDefault();
+          target.focus();
+          target.select();
+        }
       });
+      /* ====================================================== */
 
       /* ========== Row calc & grand totals (unchanged) ========== */
       function calculateRow(r){
@@ -575,6 +609,7 @@
         if(g) g.value = "ECL-";
         // reset date
         document.getElementById("date").value = new Date().toISOString().substring(0,10);
+        document.getElementById("cashbon").value = "0";
         // enable save
         const btn = document.getElementById("saveBtn");
         btn.disabled = false;
