@@ -126,14 +126,26 @@
       .highlight{background:#C8E6C9 !important;transition:background 1s}
 
       /* ---------- Bottom inputs ---------- */
-      .bottom-inputs{
-        display:grid;
-        grid-template-columns:1fr 1fr 1fr;
-        gap:16px;
-        align-items:end;
-        margin-top:10px;
-      }
-      .bottom-inputs .input-group input{font-size:14px;padding:10px}
+/* ---- Compact bottom inputs (1 line, small size) ---- */
+.bottom-inputs{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:10px;
+  margin-top:10px;
+}
+
+.bottom-inputs .input-group label{
+  font-size:11px;
+  font-weight:600;
+  color:#5d4037;
+}
+
+.bottom-inputs .input-group input{
+  font-size:12px;
+  padding:6px 8px;
+  border-radius:6px;
+}
+
 
       /* admin input style (match other bottom inputs) */
       .admin-input{
@@ -243,11 +255,34 @@
       </div>
 
       <!-- BOTTOM INPUTS -->
-      <div class="bottom-inputs">
-        <div class="input-group"><label>Cash Diterima</label><input type="text" id="cashDiterima" class="numeric"></div>
-        <div class="input-group"><label>Cashbon</label><input type="text" id="cashbon" class="numeric" value="0"></div>
-        <div class="input-group"><label>Minus</label><input type="text" id="minus" class="numeric" readonly></div>
-      </div>
+<div class="bottom-inputs">
+  <div class="input-group">
+    <label>Cash Diterima</label>
+    <input type="text" id="cashDiterima" class="numeric">
+  </div>
+
+  <div class="input-group">
+    <label>Cashbon</label>
+    <input type="text" id="cashbon" class="numeric" value="0">
+  </div>
+
+  <div class="input-group">
+    <label>Minus</label>
+    <input type="text" id="minus" class="numeric" readonly>
+  </div>
+
+  <div class="input-group">
+    <label>Plus</label>
+    <input type="text" id="plus" class="numeric" readonly value="0">
+  </div>
+
+<div class="input-group">
+  <label>Notes / Catatan</label>
+  <input type="text" id="notesRider">
+</div>
+
+</div>
+
 
       <div class="controls">
         <button class="save-btn" id="saveBtn" onclick="validateAndSave()">💾 Simpan Data</button>
@@ -468,18 +503,37 @@
         calculateMinus();
       }
 
-      function calculateMinus(){
-        const cashTotal = unformatNumber(document.getElementById("grandTotalCash").textContent);
-        const diterima = unformatNumber(document.getElementById("cashDiterima").value);
-        const cashbon = unformatNumber(document.getElementById("cashbon").value);
-        const minus = cashTotal - diterima - cashbon;
-        const el = document.getElementById("minus");
-        el.value = formatNumber(minus);
-        el.classList.remove("minus-green","minus-red","minus-yellow");
-        if(minus === 0) el.classList.add("minus-green");
-        else if(minus < 0) el.classList.add("minus-red");
-        else el.classList.add("minus-yellow");
-      }
+function calculateMinus() {
+  const cashTotal = unformatNumber(document.getElementById("grandTotalCash").textContent);
+  const diterima  = unformatNumber(document.getElementById("cashDiterima").value);
+  const cashbon   = unformatNumber(document.getElementById("cashbon").value);
+
+  let minus = 0;
+  let plus  = 0;
+
+  // MINUS (kekurangan)
+  if (cashTotal > diterima + cashbon) {
+    minus = cashTotal - diterima - cashbon;
+  }
+
+  // PLUS (kelebihan)
+  if (diterima > cashTotal + cashbon) {
+    plus = diterima - cashTotal - cashbon;
+  }
+
+  // update MINUS
+  const m = document.getElementById("minus");
+  m.value = formatNumber(minus);
+  m.classList.remove("minus-green","minus-red","minus-yellow");
+  if(minus === 0) m.classList.add("minus-green");
+  else m.classList.add("minus-yellow");
+
+  // update PLUS
+  const p = document.getElementById("plus");
+  p.value = plus > 0 ? formatNumber(plus) : "0";
+}
+
+
 
       /* ========== Validation + presence popup ========== */
       async function validateAndSave(){
@@ -505,19 +559,27 @@
           return;
         }
 
-        const { isConfirmed } = await Swal.fire({
-          title:"Konfirmasi Kehadiran Besok",
-          text:"Apakah kamu akan narik/hadir besok?",
-          icon:"question",
-          showCancelButton:true,
-          confirmButtonText:"Narik",
-          cancelButtonText:"Tidak Narik",
-          confirmButtonColor:"#43a047",
-          cancelButtonColor:"#c62828"
-        });
+const { isConfirmed } = await Swal.fire({
+  title: "Konfirmasi Kehadiran Besok",
+  text: "Apakah kamu akan narik/hadir besok?",
+  icon: "question",
+  showCancelButton: true,
+  confirmButtonText: "Narik",
+  cancelButtonText: "Tidak Narik",
+  confirmButtonColor: "#43a047",
+  cancelButtonColor: "#c62828",
 
-        const kehadiran = isConfirmed ? "Narik" : "Tidak Narik";
-        saveData(kehadiran);
+  // 🔒 Prevent closing the dialog
+  allowOutsideClick: false,
+  allowEscapeKey: false,
+  allowEnterKey: false,
+  showCloseButton: false
+});
+
+// ❗ User must pick one → guaranteed
+const kehadiran = isConfirmed ? "Narik" : "Tidak Narik";
+saveData(kehadiran);
+
       }
 
       // small helper to avoid inline var expression earlier
@@ -540,6 +602,10 @@
           cashDiterima: unformatNumber(document.getElementById("cashDiterima").value),
           cashbon: unformatNumber(document.getElementById("cashbon").value),
           minus: unformatNumber(document.getElementById("minus").value),
+          plus: unformatNumber(document.getElementById("plus").value),
+          notesRider: document.getElementById("notesRider").value,
+
+
 
           timestamp: new Date().toLocaleString("id-ID",{timeZone:"Asia/Jakarta"}),
           kehadiran,
@@ -610,6 +676,8 @@
         // reset date
         document.getElementById("date").value = new Date().toISOString().substring(0,10);
         document.getElementById("cashbon").value = "0";
+        document.getElementById("plus").value = "0";
+        document.getElementById("notesRider").value = "";
         // enable save
         const btn = document.getElementById("saveBtn");
         btn.disabled = false;
