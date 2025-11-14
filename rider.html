@@ -1,203 +1,197 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <base target="_top">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Form Penjualan Rider — Layout B</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-      /* ---------- Basic ---------- */
-      :root{
-        --brown:#795548;
-        --brown-dark:#5d4037;
-        --bg:#f3f2ef;
-        --panel:#fff;
-        --muted:#d7ccc8;
-        --accent:#43a047;
-      }
-      *{box-sizing:border-box}
-      body{
-        margin:0;
-        font-family:"Poppins", sans-serif;
-        background:var(--bg);
-        color:#3e2723;
-        -webkit-font-smoothing:antialiased;
-      }
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Form Penjualan Rider — Layout B</title>
 
-      /* ---------- Top bar / marquee ---------- */
-      .marquee-container{
-        background:var(--brown);
-        color:#fff8e1;
-        padding:6px 0;
-        overflow:hidden;
-        white-space:nowrap;
-        font-size:15px;
-      }
-      .marquee-text{display:inline-block;padding-left:100%;animation:marquee 18s linear infinite}
-      @keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-      .header{
-        display:flex;
-        align-items:center;
-        gap:12px;
-        background:linear-gradient(#6d4c41,#5d4037);
-        color:#fff;
-        padding:10px 20px;
-        box-shadow:0 2px 6px rgba(0,0,0,0.12);
-      }
-      .header img{width:40px;height:40px;border-radius:8px}
-      .header h1{font-size:18px;margin:0;font-weight:600}
+  <style>
+    /* =========================================
+       ROOT VARIABLES & GLOBAL SETTINGS
+    ======================================== */
+    :root {
+      --brown: #795548;
+      --brown-dark: #5d4037;
+      --beige: #fffdf8;
+      --bg: #f3f2ef;
+      --muted: #d7ccc8;
+      --accent: #43a047;
+      --radius: 12px;
+      --panel-radius: 14px;
+    }
 
-      /* ---------- Container ---------- */
-      .form-container{
-        max-width:1200px;
-        margin:24px auto;
-        background:var(--panel);
-        border-radius:12px;
-        padding:22px;
-        box-shadow:0 6px 18px rgba(0,0,0,0.06);
-      }
-      h2{text-align:center;margin:6px 0 20px;color:var(--brown)}
+    * { box-sizing: border-box; }
 
-      /* ---------- Top form (Layout B) ---------- */
-      .top-form{
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:16px;
-        margin-bottom:12px;
-        align-items:end;
-      }
-      .top-form-row2{
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:16px;
-        margin-bottom:20px;
-        align-items:end;
-      }
-      .input-group{display:flex;flex-direction:column;gap:6px}
-      .input-group label{font-weight:600;font-size:13px;color:#4e342e}
-      input[type="text"], input[list], input[type="date"], textarea, select {
-        padding:10px 12px;
-        font-size:14px;
-        border-radius:8px;
-        border:1px solid var(--muted);
-        background:#fffdf8;
-        width:100%;
-      }
-      input[list]::placeholder{color:#999}
-      input[type="date"]{text-align:left}
-      input:focus, textarea:focus, select:focus{
-        outline:none;
-        border-color:var(--brown);
-        box-shadow:0 0 6px rgba(121,85,72,0.12);
-      }
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      background: var(--bg);
+      color: #3e2723;
+      -webkit-font-smoothing: antialiased;
+    }
 
-      /* ---------- Table ---------- */
-      .table-wrapper{width:100%;overflow-x:auto;border-radius:8px;margin-bottom:14px}
-      table{
-        width:100%;
-        border-collapse:collapse;
-        min-width:1000px;
-        font-size:13.2px;
-      }
-      th, td{border:1px solid #ddd;padding:8px;text-align:center}
-      th{background:var(--brown);color:#fff;position:sticky;top:0;font-weight:700}
-      td:first-child{text-align:left;padding-left:14px}
-      .stock-section{background:#FFF3E0}
-      .remain-section{background:#E3F2FD}
-      .sales-section{background:#E8F5E9}
-      .cash-section{background:#F3E5F5}
-      #salesTable tr:hover td{background:#fff9c4 !important}
-      tfoot td{font-weight:700;background:#efefef}
+    /* MARQUEE */
+    .marquee-container {
+      background: var(--brown);
+      color: #fff8e1;
+      padding: 6px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-text {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 18s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(100%) }
+      100% { transform: translateX(-100%) }
+    }
 
-      /* small inputs inside table align right */
-      #salesTable input[type="text"], #salesTable textarea{
-        width:100%;
-        padding:6px 8px;
-        border-radius:6px;
-        border:1px solid #e0dcd8;
-        text-align:right;
-        background:#fff;
-        font-size:13px;
-      }
-      #salesTable textarea{resize:none;text-align:left}
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: linear-gradient(#6d4c41, #5d4037);
+      color: #fff;
+      padding: 14px 22px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    }
+    .header img { width: 42px; height: 42px; border-radius: 10px; }
+    .header h1 { font-size: 19px; margin: 0; font-weight: 600; }
 
-      /* highlight animation */
-      .highlight{background:#C8E6C9 !important;transition:background 1s}
+    /* MAIN CONTAINER */
+    .form-container {
+      max-width: 1200px;
+      margin: 26px auto;
+      background: #fff;
+      border-radius: var(--panel-radius);
+      padding: 26px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+    h2 { text-align: center; margin: 4px 0 24px; color: var(--brown); font-size: 22px; }
 
-      /* ---------- Bottom inputs ---------- */
-/* ---- Compact bottom inputs (1 line, small size) ---- */
-.bottom-inputs{
-  display:grid;
-  grid-template-columns:repeat(5, 1fr);
-  gap:10px;
-  margin-top:10px;
-}
+    /* INPUT GROUP */
+    .input-group { display:flex; flex-direction:column; gap:6px; }
+    .input-group label { font-size:13px; font-weight:600; color:#4e342e; }
 
-.bottom-inputs .input-group label{
-  font-size:11px;
-  font-weight:600;
-  color:#5d4037;
-}
+    input[list], input[type="text"], input[type="date"], select, textarea {
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid var(--muted);
+      border-radius: 8px;
+      background: var(--beige);
+      height: 42px;
+      transition: 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--brown);
+      box-shadow: 0 0 6px rgba(121,85,72,0.18);
+    }
 
-.bottom-inputs .input-group input{
-  font-size:12px;
-  padding:6px 8px;
-  border-radius:6px;
-}
+    /* TOP FORM */
+    .top-form { display:flex; flex-direction:column; gap:24px; }
+    .top-form .row { display:grid; grid-template-columns: repeat(4, 1fr); gap:20px; }
+    .top-form .small-row {
+      display:grid; grid-template-columns: repeat(2,1fr); gap:20px; width:60%; margin:0 auto;
+    }
 
+    @media (max-width:980px) {
+      .top-form .row, .top-form .small-row { grid-template-columns: 1fr; width:100%;}
+    }
 
-      /* admin input style (match other bottom inputs) */
-      .admin-input{
-        display:flex;
-        flex-direction:column;
-        gap:6px;
-      }
-      .admin-input label{font-weight:600;color:#4e342e}
-      .admin-input input{padding:10px;border-radius:8px;border:1px solid var(--muted);background:#fffdf8}
+    /* TABLE */
+    .table-wrapper { width:100%; margin-top:16px; overflow-x:auto; border-radius:var(--radius); }
+    table { width:100%; min-width:1000px; border-collapse:collapse; font-size:13px; }
+    th, td { border:1px solid #e5e3df; padding:7px 8px; text-align:center; }
+    th {
+      background: var(--brown);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      font-weight:700;
+      z-index:2;
+    }
+    td:first-child { text-align:left; padding-left:12px; font-weight:500; }
 
-      /* ---------- Buttons ---------- */
-      .controls{display:flex;gap:12px;margin-top:18px;align-items:center}
-      .save-btn,.reset-btn{
-        padding:10px 16px;border-radius:8px;border:none;cursor:pointer;color:#fff;font-weight:600;
-      }
-      .save-btn{background:var(--brown)}
-      .save-btn:hover{background:var(--brown-dark)}
-      .reset-btn{background:#607d8b}
-      .reset-btn:hover{background:#455a64}
+    .stock-section  { background:#FFF3E0 }
+    .remain-section { background:#E3F2FD }
+    .sales-section  { background:#E8F5E9 }
+    .cash-section   { background:#F3E5F5 }
 
-      .floating-save{
-        position:fixed;right:20px;bottom:20px;background:var(--brown);color:#fff;border:none;border-radius:50%;
-        width:56px;height:56px;font-size:20px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.12);display:none;z-index:1200;
-      }
+    #salesTable tr:hover td { background:#fff9c4 !important; }
+    tfoot td { font-weight:700; background:#efefef; }
 
-      /* popup small */
-      .popup{position:fixed;top:20px;right:20px;background:var(--accent);color:#fff;padding:12px 18px;border-radius:8px;z-index:2000;opacity:0;transform:translateY(-10px);transition:all .3s}
-      .popup.show{opacity:1;transform:translateY(0)}
+    #salesTable input[type="text"], #salesTable textarea {
+      width:100%; padding:6px 6px; font-size:13px; border-radius:6px; border:1px solid #ddd; background:#fff; text-align:right;
+    }
+    #salesTable textarea { resize:none; text-align:left; }
 
-      /* responsive tweaks */
-      @media (max-width:980px){
-        .top-form{grid-template-columns:1fr;align-items:stretch}
-        .top-form-row2{grid-template-columns:1fr}
-        .bottom-inputs{grid-template-columns:1fr}
-        table{min-width:900px}
-      }
-    </style>
-  </head>
+    .highlight { background:#C8E6C9 !important; transition: background 1s; }
 
-  <body>
-    <div class="marquee-container"><div id="welcomeText" class="marquee-text">Hi Rider, semangat ya untuk hari ini ☕</div></div>
+    /* BOTTOM INPUTS */
+    .bottom-inputs {
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:18px;
+      margin-top:18px;
+    }
+    .bottom-inputs .input-group label { font-size:11px; font-weight:600; }
+    .bottom-inputs input { height:38px; padding:6px 8px; font-size:12px; border-radius:6px; }
 
-    <div class="header">
-      <img src="https://raw.githubusercontent.com/yohanesbima/ank/main/WhatsApp%20Image%202025-11-09%20at%2003.17.03.png" alt="Logo">
-      <h1>Atas Nama Kopi — Express</h1>
-    </div>
+    /* BUTTONS */
+    .controls { display:flex; justify-content:center; margin-top:22px; gap:14px; }
+    .save-btn, .reset-btn {
+      padding:10px 18px; border-radius:8px; font-weight:600; border:none; color:#fff; cursor:pointer; transition:0.2s;
+    }
+    .save-btn { background:var(--brown); }
+    .save-btn:hover { background:var(--brown-dark); }
+    .reset-btn { background:#607d8b; }
+    .reset-btn:hover { background:#455a64; }
 
-    <div class="form-container">
-      <h2>Form Penjualan Rider</h2>
+    .floating-save {
+      position:fixed; right:20px; bottom:20px; width:56px; height:56px; border-radius:50%; background:var(--brown);
+      box-shadow:0 6px 18px rgba(0,0,0,0.12); color:#fff; border:none; font-size:20px; cursor:pointer; display:none; z-index:999;
+    }
 
-      <!-- TOP FORM LAYOUT B -->
-      <div class="top-form">
+    .popup {
+      position: fixed; top:20px; right:20px; padding:12px 18px; background:var(--accent); color:white; border-radius:8px;
+      opacity:0; transform:translateY(-12px); transition:all .3s; z-index:2000;
+    }
+    .popup.show { opacity:1; transform:translateY(0); }
+  </style>
+
+  <!-- SweetAlert must be loaded in head -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <div class="marquee-container">
+    <div id="welcomeText" class="marquee-text">Hi Rider, semangat ya untuk hari ini ☕</div>
+  </div>
+
+  <div class="header">
+    <img src="https://raw.githubusercontent.com/yohanesbima/ank/main/WhatsApp%20Image%202025-11-09%20at%2003.17.03.png" alt="Logo">
+    <h1>Atas Nama Kopi — Express</h1>
+  </div>
+
+  <div class="form-container">
+    <h2>Form Penjualan Rider</h2>
+
+    <!-- TOP FORM -->
+    <div class="top-form">
+      <div class="row">
+        <div class="input-group">
+          <label>Outlet</label>
+          <select id="outletSelect">
+            <option value="">-- Pilih Outlet --</option>
+            <option value="Rawamangun">Rawamangun</option>
+            <option value="Ciledug">Ciledug</option>
+          </select>
+        </div>
+
         <div class="input-group">
           <label>Nama Rider</label>
           <input list="riderList" id="riderName" placeholder="Pilih atau ketik nama rider...">
@@ -212,13 +206,12 @@
 
         <div class="input-group">
           <label>No Gerobak</label>
-          <!-- keep ID exactly 'noGerobak' to match server-side expectations -->
-          <input list="gerobakList" id="noGerobak" placeholder="Pilih atau ketik No Gerobak..." value="ECL-">
+          <input list="gerobakList" id="noGerobak" placeholder="Pilih atau ketik No Gerobak...">
           <datalist id="gerobakList"></datalist>
         </div>
       </div>
 
-      <div class="top-form-row2">
+      <div class="row small-row">
         <div class="input-group">
           <label>Tanggal</label>
           <input type="date" id="date">
@@ -230,467 +223,509 @@
           <datalist id="adminList"></datalist>
         </div>
       </div>
-
-      <!-- TABLE -->
-      <div class="table-wrapper">
-        <table id="salesTable">
-          <thead>
-            <tr>
-              <th>Produk</th><th>Harga</th><th>Stok Lama</th><th>Stok Baru</th><th>Total Awal</th>
-              <th>Sisa Lama</th><th>Sisa Baru</th><th>Total Sisa</th><th>Terjual</th>
-              <th>Pendapatan</th><th>Cash</th><th>QR</th><th>Catatan</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2" style="text-align:right;">GRAND TOTAL</td>
-              <td id="grandOldStock">0</td><td id="grandNewStock">0</td><td id="grandTotalStart">0</td>
-              <td id="grandRemainOld">0</td><td id="grandRemainNew">0</td><td id="grandTotalRemain">0</td>
-              <td id="grandTotalSold">0</td><td id="grandTotalRevenue">0</td>
-              <td id="grandTotalCash">0</td><td id="grandTotalQR">0</td><td></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
-      <!-- BOTTOM INPUTS -->
-<div class="bottom-inputs">
-  <div class="input-group">
-    <label>Cash Diterima</label>
-    <input type="text" id="cashDiterima" class="numeric">
-  </div>
-
-  <div class="input-group">
-    <label>Cashbon</label>
-    <input type="text" id="cashbon" class="numeric" value="0">
-  </div>
-
-  <div class="input-group">
-    <label>Minus</label>
-    <input type="text" id="minus" class="numeric" readonly>
-  </div>
-
-  <div class="input-group">
-    <label>Plus</label>
-    <input type="text" id="plus" class="numeric" readonly value="0">
-  </div>
-
-<div class="input-group">
-  <label>Notes / Catatan</label>
-  <input type="text" id="notesRider">
-</div>
-
-</div>
-
-
-      <div class="controls">
-        <button class="save-btn" id="saveBtn" onclick="validateAndSave()">💾 Simpan Data</button>
-        <button class="reset-btn" onclick="resetForm()">🆕 Input Baru</button>
-        <span id="status" style="margin-left:12px;color:#444;font-weight:600"></span>
-      </div>
-
     </div>
 
-    <button class="floating-save" onclick="validateAndSave()">💾</button>
-    <div id="popup" class="popup">✅ Data berhasil disimpan</div>
+    <!-- TABLE -->
+    <div class="table-wrapper">
+      <table id="salesTable">
+        <thead>
+          <tr>
+            <th>Produk</th><th>Harga</th><th>Stok Lama</th><th>Stok Baru</th><th>Total Awal</th>
+            <th>Sisa Lama</th><th>Sisa Baru</th><th>Total Sisa</th><th>Terjual</th>
+            <th>Pendapatan</th><th>Cash</th><th>QR</th><th>Catatan</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align:right;">GRAND TOTAL</td>
+            <td id="grandOldStock">0</td><td id="grandNewStock">0</td><td id="grandTotalStart">0</td>
+            <td id="grandRemainOld">0</td><td id="grandRemainNew">0</td><td id="grandTotalRemain">0</td>
+            <td id="grandTotalSold">0</td><td id="grandTotalRevenue">0</td>
+            <td id="grandTotalCash">0</td><td id="grandTotalQR">0</td><td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-    <script>
-      /* ========== Greeting (unchanged) ========== */
-      google.script.run.withSuccessHandler(fullname => {
-        const name = fullname || "Rider";
-        if (name === "Nicky Zahara") {
-          const messages = [
-            "🌞 Hari ini bisa jadi hari terbaikmu, asal kamu mau tersenyum duluan 😄",
-            "☕ Semangat Nicky! Kamu bikin kopi seenak senyum kamu hari ini 💫",
-            "🚴‍♀️ Satu langkah kecil hari ini bisa jadi awal luar biasa besok 💥",
-            "💐 Jangan lupa bahagia, Nicky! Dunia butuh energi positifmu 🌸",
-            "🔥 Semangat itu menular, kamu penyebabnya hari ini 😎",
-            "💪 Kopinya boleh pahit, tapi harimu jangan ☕"
-          ];
-          document.getElementById("welcomeText").textContent =
-            messages[Math.floor(Math.random() * messages.length)];
-        } else {
-          const normalTexts = [
-            `☕ Semangat kerja hari ini, ${name}!`,
-            `💪 Jalani hari dengan penuh semangat, ${name}!`,
-            `🌞 Selamat beraktivitas ${name}, tetap positif ya!`,
-            `🚴‍♂️ Yuk ${name}, kita buat hari ini produktif!`
-          ];
-          document.getElementById("welcomeText").textContent =
-            normalTexts[Math.floor(Math.random() * normalTexts.length)];
-        }
-      }).getUserName();
+    <!-- BOTTOM INPUTS -->
+    <div class="bottom-inputs">
+      <div class="input-group">
+        <label>Cash Diterima</label>
+        <input type="text" id="cashDiterima" class="numeric">
+      </div>
 
-      /* ========== Load master data (unchanged behavior) ========== */
-      google.script.run.withSuccessHandler(renderPage).getMasterData();
+      <div class="input-group">
+        <label>Cashbon</label>
+        <input type="text" id="cashbon" class="numeric" value="0">
+      </div>
 
-      function renderPage(d){
-        // expect d = { products, admins, riders, locations, gerobakList } or similar
-        const {products, admins, riders, locations, gerobakList} = d;
-        renderProducts(products || []);
-        renderDropdown(document.getElementById("adminList"), admins || []);
-        renderDropdown(document.getElementById("riderList"), riders || []);
-        renderDropdown(document.getElementById("locationList"), locations || []);
-        renderDropdown(document.getElementById("gerobakList"), gerobakList || []);
+      <div class="input-group">
+        <label>Minus</label>
+        <input type="text" id="minus" class="numeric" readonly>
+      </div>
 
-        // set today's date
-        document.getElementById("date").value = new Date().toISOString().substring(0,10);
-      }
+      <div class="input-group">
+        <label>Plus</label>
+        <input type="text" id="plus" class="numeric" readonly value="0">
+      </div>
 
-      function renderDropdown(datalistElm, list){
-        if(!datalistElm) return;
-        datalistElm.innerHTML = "";
-        (list || []).sort((a,b)=> String(a).localeCompare(String(b))).forEach(v=>{
-          const o = document.createElement("option");
-          o.value = v;
-          datalistElm.appendChild(o);
-        });
-      }
+      <div class="input-group">
+        <label>Notes / Catatan</label>
+        <input type="text" id="notesRider">
+      </div>
+    </div>
 
-      function formatNumber(v){ return isNaN(v) || v === "" ? "" : Number(v).toLocaleString("en-US"); }
-      function unformatNumber(v){ return Number((v||"").toString().replace(/,/g,"")) || 0; }
+    <div class="controls">
+      <button class="save-btn" id="saveBtn" onclick="validateAndSave()">💾 Simpan Data</button>
+      <button class="reset-btn" onclick="resetForm()">🆕 Input Baru</button>
+      <span id="status" style="margin-left:12px;color:#444;font-weight:600"></span>
+    </div>
+  </div>
 
-      /* ========== Render products (unchanged logic) ========== */
-      function renderProducts(products){
-        const tb = document.getElementById("tableBody");
-        tb.innerHTML = "";
-        (products || []).forEach(p=>{
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${p.product}</td>
-            <td><input type="text" class="price" value="${formatNumber(p.price)}" readonly></td>
+  <button class="floating-save" onclick="validateAndSave()">💾</button>
+  <div id="popup" class="popup">✅ Data berhasil disimpan</div>
 
-            <td class="stock-section"><input type="text" class="oldStock numeric"></td>
-            <td class="stock-section"><input type="text" class="newStock numeric"></td>
-            <td class="stock-section"><input type="text" class="totalStart" readonly></td>
-
-            <td class="remain-section"><input type="text" class="remainOld numeric"></td>
-            <td class="remain-section"><input type="text" class="remainNew numeric"></td>
-            <td class="remain-section"><input type="text" class="totalRemain" readonly></td>
-
-            <td class="sales-section"><input type="text" class="sold" readonly></td>
-            <td class="sales-section"><input type="text" class="revenue" readonly></td>
-
-            <td class="cash-section"><input type="text" class="cash" readonly></td>
-            <td class="cash-section"><input type="text" class="qr numeric"></td>
-
-            <td><textarea class="notes" rows="1"></textarea></td>
-          `;
-          tb.appendChild(tr);
-        });
-      }
-
-      /* ========== Input listener (unchanged) ========== */
-      document.addEventListener("input", e => {
-        if(e.target.classList.contains("numeric")){
-          const raw = e.target.value.replace(/,/g,"");
-          if(isNaN(raw)) e.target.classList.add("invalid");
-          else { e.target.classList.remove("invalid"); e.target.value = formatNumber(raw); }
-        }
-
-        if(["oldStock","newStock","remainOld","remainNew","qr"].some(cls => e.target.classList.contains(cls))){
-          calculateRow(e.target.closest("tr"));
-          updateGrandTotal();
-        }
-
-        if(["cashDiterima","cashbon"].includes(e.target.id)) calculateMinus();
-      });
-
-      /* ========== Keyboard nav (unchanged) ========== */
-     /* ======================================================
-         🔥 PATCH NAVIGASI ARROW (UP/DOWN/LEFT/RIGHT + ENTER)
-         ====================================================== */
-      document.addEventListener("keydown", e => {
-        const active = document.activeElement;
-        if(!active.matches("input,textarea")) return;
-
-        const row   = active.closest("tr");
-        if(!row) return;
-
-        const allRows = Array.from(document.querySelectorAll("#tableBody tr"));
-        const rowIndex = allRows.indexOf(row);
-
-        const cellsInRow = Array.from(row.querySelectorAll("input,textarea"));
-        const colIndex = cellsInRow.indexOf(active);
-
-        let target = null;
-
-        if(e.key==="ArrowRight"){
-          target = cellsInRow[colIndex+1];
-        }
-        else if(e.key==="ArrowLeft"){
-          target = cellsInRow[colIndex-1];
-        }
-        else if(e.key==="ArrowDown" || e.key==="Enter"){
-          const nextRow = allRows[rowIndex+1];
-          if(nextRow){
-            const nextCells = Array.from(nextRow.querySelectorAll("input,textarea"));
-            target = nextCells[colIndex] || nextCells[nextCells.length-1];
-          }
-        }
-        else if(e.key==="ArrowUp"){
-          const prevRow = allRows[rowIndex-1];
-          if(prevRow){
-            const prevCells = Array.from(prevRow.querySelectorAll("input,textarea"));
-            target = prevCells[colIndex] || prevCells[prevCells.length-1];
-          }
-        }
-
-        if(target){
-          e.preventDefault();
-          target.focus();
-          target.select();
-        }
-      });
-      /* ====================================================== */
-
-      /* ========== Row calc & grand totals (unchanged) ========== */
-      function calculateRow(r){
-        const price = unformatNumber(r.querySelector(".price").value);
-        const oldS = unformatNumber(r.querySelector(".oldStock").value);
-        const newS = unformatNumber(r.querySelector(".newStock").value);
-        const rOld = unformatNumber(r.querySelector(".remainOld").value);
-        const rNew = unformatNumber(r.querySelector(".remainNew").value);
-        const qr = unformatNumber(r.querySelector(".qr").value);
-
-        const totalStart = oldS + newS;
-        const totalRemain = rOld + rNew;
-        const sold = totalStart - totalRemain;
-        const revenue = sold * price;
-        const cash = revenue - qr;
-
-        r.querySelector(".totalStart").value = formatNumber(totalStart);
-        r.querySelector(".totalRemain").value = formatNumber(totalRemain);
-        r.querySelector(".sold").value = formatNumber(sold);
-        r.querySelector(".revenue").value = formatNumber(revenue);
-        r.querySelector(".cash").value = formatNumber(cash);
-      }
-
-      function updateGrandTotal(){
-        const t = {oldStock:0,newStock:0,totalStart:0,remainOld:0,remainNew:0,totalRemain:0,sold:0,revenue:0,qr:0,cash:0};
-        document.querySelectorAll("#tableBody tr").forEach(r=>{
-          t.oldStock += unformatNumber(r.querySelector(".oldStock").value);
-          t.newStock += unformatNumber(r.querySelector(".newStock").value);
-          t.totalStart += unformatNumber(r.querySelector(".totalStart").value);
-          t.remainOld += unformatNumber(r.querySelector(".remainOld").value);
-          t.remainNew += unformatNumber(r.querySelector(".remainNew").value);
-          t.totalRemain += unformatNumber(r.querySelector(".totalRemain").value);
-          t.sold += unformatNumber(r.querySelector(".sold").value);
-          t.revenue += unformatNumber(r.querySelector(".revenue").value);
-          t.qr += unformatNumber(r.querySelector(".qr").value);
-          t.cash += unformatNumber(r.querySelector(".cash").value);
-        });
-
-        const fields = [
-          ["grandOldStock", t.oldStock],["grandNewStock", t.newStock],
-          ["grandTotalStart", t.totalStart],["grandRemainOld", t.remainOld],
-          ["grandRemainNew", t.remainNew],["grandTotalRemain", t.totalRemain],
-          ["grandTotalSold", t.sold],["grandTotalRevenue", t.revenue],
-          ["grandTotalQR", t.qr],["grandTotalCash", t.cash]
+  <script>
+    /* ========== Greeting (calls server-side to get user name) ========== */
+    google.script.run.withSuccessHandler(fullname => {
+      const name = fullname || "Rider";
+      if (name === "Nicky Zahara") {
+        const messages = [
+          "🌞 Hari ini bisa jadi hari terbaikmu, asal kamu mau tersenyum duluan 😄",
+          "☕ Semangat Nicky! Kamu bikin kopi seenak senyum kamu hari ini 💫",
+          "🚴‍♀️ Satu langkah kecil hari ini bisa jadi awal luar biasa besok 💥",
+          "💐 Jangan lupa bahagia, Nicky! Dunia butuh energi positifmu 🌸",
+          "🔥 Semangat itu menular, kamu penyebabnya hari ini 😎",
+          "💪 Kopinya boleh pahit, tapi harimu jangan ☕"
         ];
-
-        fields.forEach(([id,val])=>{
-          const el = document.getElementById(id);
-          const newVal = formatNumber(val);
-          if(el.textContent !== newVal){
-            el.textContent = newVal;
-            el.classList.add("highlight");
-            setTimeout(()=>el.classList.remove("highlight"),600);
-          }
-        });
-
-        calculateMinus();
+        document.getElementById("welcomeText").textContent =
+          messages[Math.floor(Math.random() * messages.length)];
+      } else {
+        const normalTexts = [
+          `☕ Semangat kerja hari ini, ${name}!`,
+          `💪 Jalani hari dengan penuh semangat, ${name}!`,
+          `🌞 Selamat beraktivitas ${name}, tetap positif ya!`,
+          `🚴‍♂️ Yuk ${name}, kita buat hari ini produktif!`
+        ];
+        document.getElementById("welcomeText").textContent =
+          normalTexts[Math.floor(Math.random() * normalTexts.length)];
       }
+    }).getUserName();
 
-function calculateMinus() {
-  const cashTotal = unformatNumber(document.getElementById("grandTotalCash").textContent);
-  const diterima  = unformatNumber(document.getElementById("cashDiterima").value);
-  const cashbon   = unformatNumber(document.getElementById("cashbon").value);
+    /* ========== Load master data (unchanged behavior) ========== */
+    google.script.run.withSuccessHandler(renderPage).getMasterData();
 
-  let minus = 0;
-  let plus  = 0;
+    // GLOBAL data holder
+    let MASTER = {};
 
-  // MINUS (kekurangan)
-  if (cashTotal > diterima + cashbon) {
-    minus = cashTotal - diterima - cashbon;
+    function renderPage(d){
+      MASTER = d || {};
+
+      // prepare lists
+      MASTER.ridersWithMeta = d.ridersWithMeta || [];
+      MASTER.locations = d.locations || [];
+      MASTER.gerobakList = d.gerobakList || [];
+
+      // populate dropdowns
+      renderDropdown(document.getElementById("adminList"), d.admins || []);
+      renderDropdown(document.getElementById("riderList"), []);
+      renderDropdown(document.getElementById("locationList"), []);
+      renderDropdown(document.getElementById("gerobakList"), []);
+
+      // listen outlet changes
+      const outletEl = document.getElementById("outletSelect");
+      if (outletEl) outletEl.addEventListener("change", applyOutletFilter);
+
+      // set today's date
+      const dateEl = document.getElementById("date");
+      if (dateEl) dateEl.value = new Date().toISOString().substring(0,10);
+
+      // products
+      renderProducts(d.products || []);
+    }
+
+function applyOutletFilter() {
+  const outlet = document.getElementById("outletSelect").value;
+
+  // ========== CLEAR IF NO OUTLET ==========
+  if (!outlet) {
+    renderDropdown(document.getElementById("riderList"), []);
+    renderDropdown(document.getElementById("locationList"), []);
+    renderDropdown(document.getElementById("gerobakList"), []);
+    document.getElementById("noGerobak").value = "";
+    return;
   }
 
-  // PLUS (kelebihan)
-  if (diterima > cashTotal + cashbon) {
-    plus = diterima - cashTotal - cashbon;
-  }
+/* ========== RIDER FILTER (ACTIVE ONLY + OUTLET MATCH) ========== */
+  const filteredRiders = MASTER.ridersWithMeta
+    .filter(r =>
+      (r.status || "").toLowerCase() === "aktif" &&
+      (r.outlet || "").toLowerCase() === outlet.toLowerCase()
+    )
+    .map(r => r.name);
 
-  // update MINUS
-  const m = document.getElementById("minus");
-  m.value = formatNumber(minus);
-  m.classList.remove("minus-green","minus-red","minus-yellow");
-  if(minus === 0) m.classList.add("minus-green");
-  else m.classList.add("minus-yellow");
+  renderDropdown(document.getElementById("riderList"), filteredRiders);
 
-  // update PLUS
-  const p = document.getElementById("plus");
-  p.value = plus > 0 ? formatNumber(plus) : "0";
+  // ========== LOCATION FILTER ==========
+  // lokasi AMBIL DARI SHEET tbl_location
+  // tapi FILTERNYA hanya yang cocok dengan outlet
+const filteredLocations = MASTER.locations
+  .filter(l => (l.outlet || "").toLowerCase() === outlet.toLowerCase())
+  .map(l => l.name);
+
+renderDropdown(document.getElementById("locationList"), filteredLocations);
+
+  // ========== GEROBAK FILTER BY PREFIX ==========
+  let prefix = "";
+  if (outlet === "Rawamangun") prefix = "rwm";
+  else if (outlet === "Ciledug") prefix = "ecl";
+
+  const filteredGerobak = MASTER.gerobakList.filter(g =>
+    g.toLowerCase().includes(prefix)
+  );
+
+  renderDropdown(document.getElementById("gerobakList"), filteredGerobak);
+
+  // ========== DEFAULT PREFIX NO GEROBAK ==========
+  document.getElementById("noGerobak").value =
+    outlet === "Rawamangun" ? "RWM-" :
+    outlet === "Ciledug" ? "ECL-" : "";
 }
 
 
+    function renderDropdown(datalistElm, list){
+      if(!datalistElm) return;
+      datalistElm.innerHTML = "";
+      (list || []).sort((a,b)=> String(a).localeCompare(String(b))).forEach(v=>{
+        const o = document.createElement("option");
+        o.value = v;
+        datalistElm.appendChild(o);
+      });
+    }
 
-      /* ========== Validation + presence popup ========== */
-      async function validateAndSave(){
-        const required = [
-          { id:"riderName", label:"Nama Rider" },
-          { id:"location", label:"Lokasi" },
-          { id:"noGerobak", label:"No Gerobak" },
-          { id:"adminCheckedBy", label:"Admin Checked By" },
-          { id:"cashDiterima", label:"Cash Diterima" }
-        ];
+    function formatNumber(v){ return isNaN(v) || v === "" ? "" : Number(v).toLocaleString("en-US"); }
+    function unformatNumber(v){ return Number((v||"").toString().replace(/,/g,"")) || 0; }
 
-        for(const r of required){
-          const el = document.getElementById(r.id);
-          if(!el.value || !el.value.toString().trim()){
-            await Swal.fire({ title:"Data Belum Lengkap", text:`Kolom ${r.label} wajib diisi.`, icon:"warning", confirmButtonColor:varOr("#795548") });
-            el.focus();
-            return;
-          }
+    /* Render products rows */
+    function renderProducts(products){
+      const tb = document.getElementById("tableBody");
+      tb.innerHTML = "";
+      (products || []).forEach(p=>{
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${p.product}</td>
+          <td><input type="text" class="price" value="${formatNumber(p.price)}" readonly></td>
+
+          <td class="stock-section"><input type="text" class="oldStock numeric"></td>
+          <td class="stock-section"><input type="text" class="newStock numeric"></td>
+          <td class="stock-section"><input type="text" class="totalStart" readonly></td>
+
+          <td class="remain-section"><input type="text" class="remainOld numeric"></td>
+          <td class="remain-section"><input type="text" class="remainNew numeric"></td>
+          <td class="remain-section"><input type="text" class="totalRemain" readonly></td>
+
+          <td class="sales-section"><input type="text" class="sold" readonly></td>
+          <td class="sales-section"><input type="text" class="revenue" readonly></td>
+
+          <td class="cash-section"><input type="text" class="cash" readonly></td>
+          <td class="cash-section"><input type="text" class="qr numeric"></td>
+
+          <td><textarea class="notes" rows="1"></textarea></td>
+        `;
+        tb.appendChild(tr);
+      });
+    }
+
+    /* Input handling */
+    document.addEventListener("input", e => {
+      if(e.target.classList.contains("numeric")){
+        const raw = e.target.value.replace(/,/g,"");
+        if(isNaN(raw)) e.target.classList.add("invalid");
+        else { e.target.classList.remove("invalid"); e.target.value = formatNumber(raw); }
+      }
+
+      if(["oldStock","newStock","remainOld","remainNew","qr"].some(cls => e.target.classList.contains(cls))){
+        calculateRow(e.target.closest("tr"));
+        updateGrandTotal();
+      }
+
+      if(["cashDiterima","cashbon"].includes(e.target.id)) calculateMinus();
+    });
+
+    /* Keyboard navigation */
+    document.addEventListener("keydown", e => {
+      const active = document.activeElement;
+      if(!active || !active.matches("input,textarea")) return;
+
+      const row = active.closest("tr");
+      if(!row) return;
+
+      const allRows = Array.from(document.querySelectorAll("#tableBody tr"));
+      const rowIndex = allRows.indexOf(row);
+      const cellsInRow = Array.from(row.querySelectorAll("input,textarea"));
+      const colIndex = cellsInRow.indexOf(active);
+
+      let target = null;
+
+      if(e.key === "ArrowRight") target = cellsInRow[colIndex+1];
+      else if(e.key === "ArrowLeft") target = cellsInRow[colIndex-1];
+      else if(e.key === "ArrowDown" || e.key === "Enter") {
+        const nextRow = allRows[rowIndex+1];
+        if(nextRow){
+          const nextCells = Array.from(nextRow.querySelectorAll("input,textarea"));
+          target = nextCells[colIndex] || nextCells[nextCells.length-1];
         }
-
-        if(document.querySelectorAll(".invalid").length > 0){
-          Swal.fire("Error","Ada kolom yang berisi nilai tidak valid!","error");
-          return;
+      }
+      else if(e.key === "ArrowUp") {
+        const prevRow = allRows[rowIndex-1];
+        if(prevRow){
+          const prevCells = Array.from(prevRow.querySelectorAll("input,textarea"));
+          target = prevCells[colIndex] || prevCells[prevCells.length-1];
         }
-
-const { isConfirmed } = await Swal.fire({
-  title: "Konfirmasi Kehadiran Besok",
-  text: "Apakah kamu akan narik/hadir besok?",
-  icon: "question",
-  showCancelButton: true,
-  confirmButtonText: "Narik",
-  cancelButtonText: "Tidak Narik",
-  confirmButtonColor: "#43a047",
-  cancelButtonColor: "#c62828",
-
-  // 🔒 Prevent closing the dialog
-  allowOutsideClick: false,
-  allowEscapeKey: false,
-  allowEnterKey: false,
-  showCloseButton: false
-});
-
-// ❗ User must pick one → guaranteed
-const kehadiran = isConfirmed ? "Narik" : "Tidak Narik";
-saveData(kehadiran);
-
       }
 
-      // small helper to avoid inline var expression earlier
-      function varOr(fallback){ return fallback; }
-
-      /* ========== Save to Apps Script (unchanged behavior) ========== */
-      function saveData(kehadiran){
-        const btn = document.getElementById("saveBtn");
-        btn.disabled = true;
-        btn.style.opacity = "0.5";
-        document.getElementById("status").textContent = "⏳ Menyimpan data...";
-
-        const data = {
-          riderName: document.getElementById("riderName").value,
-          location: document.getElementById("location").value,
-          noGerobak: document.getElementById("noGerobak").value,
-          date: document.getElementById("date").value,
-          adminChecked: document.getElementById("adminCheckedBy").value,
-
-          cashDiterima: unformatNumber(document.getElementById("cashDiterima").value),
-          cashbon: unformatNumber(document.getElementById("cashbon").value),
-          minus: unformatNumber(document.getElementById("minus").value),
-          plus: unformatNumber(document.getElementById("plus").value),
-          notesRider: document.getElementById("notesRider").value,
-
-
-
-          timestamp: new Date().toLocaleString("id-ID",{timeZone:"Asia/Jakarta"}),
-          kehadiran,
-
-          products: [...document.querySelectorAll("#tableBody tr")].map(r=>({
-            product: r.cells[0].textContent,
-            price: unformatNumber(r.querySelector(".price").value),
-            oldStock: unformatNumber(r.querySelector(".oldStock").value),
-            newStock: unformatNumber(r.querySelector(".newStock").value),
-            totalStart: unformatNumber(r.querySelector(".totalStart").value),
-            remainOld: unformatNumber(r.querySelector(".remainOld").value),
-            remainNew: unformatNumber(r.querySelector(".remainNew").value),
-            totalRemain: unformatNumber(r.querySelector(".totalRemain").value),
-            sold: unformatNumber(r.querySelector(".sold").value),
-            revenue: unformatNumber(r.querySelector(".revenue").value),
-            qr: unformatNumber(r.querySelector(".qr").value),
-            cash: unformatNumber(r.querySelector(".cash").value),
-            notes: r.querySelector(".notes").value
-          }))
-        };
-
-        google.script.run
-          .withSuccessHandler(msg => {
-            Swal.fire({
-              title:"Berhasil!",
-              html:`Data berhasil disimpan.<br><b>Kehadiran besok:</b> ${kehadiran}`,
-              icon:"success",
-              timer:2200,
-              showConfirmButton:false
-            });
-
-            showPopup(`Data berhasil disimpan (${kehadiran})`);
-            document.getElementById("status").textContent = msg;
-
-            // tombol akan tetap OFF sampai user klik 'Input Baru' (sesuai permintaan)
-          })
-          .withFailureHandler(err=>{
-            Swal.fire("Gagal!", err.message, "error");
-            document.getElementById("status").textContent = "❌ " + err.message;
-            // kembalikan tombol kalau ada error
-            btn.disabled = false;
-            btn.style.opacity = "1";
-          })
-          .saveRiderData(data);
+      if(target){
+        e.preventDefault();
+        target.focus();
+        target.select();
       }
+    });
 
-      /* ========== Popup small ========== */
-      function showPopup(msg){
-        const pop = document.getElementById("popup");
-        pop.textContent = msg;
-        pop.classList.add("show");
-        setTimeout(()=>pop.classList.remove("show"),3000);
-      }
+    /* Row calculations */
+    function calculateRow(r){
+      if(!r) return;
+      const price = unformatNumber(r.querySelector(".price").value);
+      const oldS = unformatNumber(r.querySelector(".oldStock").value);
+      const newS = unformatNumber(r.querySelector(".newStock").value);
+      const rOld = unformatNumber(r.querySelector(".remainOld").value);
+      const rNew = unformatNumber(r.querySelector(".remainNew").value);
+      const qr = unformatNumber(r.querySelector(".qr").value);
 
-      /* ========== Reset (restores save button and defaults) ========== */
-      function resetForm(){
-        document.querySelectorAll("#tableBody input, #tableBody textarea").forEach(e=>{
-          if(!e.classList.contains("price")) e.value = "";
-        });
-        document.querySelectorAll("tfoot td[id]").forEach(td=>td.textContent="0");
-        ["riderName","location","adminCheckedBy","cashDiterima","cashbon","minus"].forEach(id=>{
-          const el = document.getElementById(id);
-          if(el) el.value = "";
-        });
-        // restore default gerobak prefix
-        const g = document.getElementById("noGerobak");
-        if(g) g.value = "ECL-";
-        // reset date
-        document.getElementById("date").value = new Date().toISOString().substring(0,10);
-        document.getElementById("cashbon").value = "0";
-        document.getElementById("plus").value = "0";
-        document.getElementById("notesRider").value = "";
-        // enable save
-        const btn = document.getElementById("saveBtn");
-        btn.disabled = false;
-        btn.style.opacity = "1";
-        document.getElementById("status").textContent = "";
-      }
+      const totalStart = oldS + newS;
+      const totalRemain = rOld + rNew;
+      const sold = totalStart - totalRemain;
+      const revenue = sold * price;
+      const cash = revenue - qr;
 
-      /* ========== Floating save visibility ========== */
-      window.addEventListener("scroll", ()=>{
-        const b = document.querySelector(".floating-save");
-        b.style.display = window.scrollY > 400 ? "block" : "none";
+      r.querySelector(".totalStart").value = formatNumber(totalStart);
+      r.querySelector(".totalRemain").value = formatNumber(totalRemain);
+      r.querySelector(".sold").value = formatNumber(sold);
+      r.querySelector(".revenue").value = formatNumber(revenue);
+      r.querySelector(".cash").value = formatNumber(cash);
+    }
+
+    function updateGrandTotal(){
+      const t = {oldStock:0,newStock:0,totalStart:0,remainOld:0,remainNew:0,totalRemain:0,sold:0,revenue:0,qr:0,cash:0};
+      document.querySelectorAll("#tableBody tr").forEach(r=>{
+        t.oldStock += unformatNumber(r.querySelector(".oldStock").value);
+        t.newStock += unformatNumber(r.querySelector(".newStock").value);
+        t.totalStart += unformatNumber(r.querySelector(".totalStart").value);
+        t.remainOld += unformatNumber(r.querySelector(".remainOld").value);
+        t.remainNew += unformatNumber(r.querySelector(".remainNew").value);
+        t.totalRemain += unformatNumber(r.querySelector(".totalRemain").value);
+        t.sold += unformatNumber(r.querySelector(".sold").value);
+        t.revenue += unformatNumber(r.querySelector(".revenue").value);
+        t.qr += unformatNumber(r.querySelector(".qr").value);
+        t.cash += unformatNumber(r.querySelector(".cash").value);
       });
 
-    </script>
-  </body>
+      const fields = [
+        ["grandOldStock", t.oldStock],["grandNewStock", t.newStock],
+        ["grandTotalStart", t.totalStart],["grandRemainOld", t.remainOld],
+        ["grandRemainNew", t.remainNew],["grandTotalRemain", t.totalRemain],
+        ["grandTotalSold", t.sold],["grandTotalRevenue", t.revenue],
+        ["grandTotalQR", t.qr],["grandTotalCash", t.cash]
+      ];
+
+      fields.forEach(([id,val])=>{
+        const el = document.getElementById(id);
+        const newVal = formatNumber(val);
+        if(el && el.textContent !== newVal){
+          el.textContent = newVal;
+          el.classList.add("highlight");
+          setTimeout(()=>el.classList.remove("highlight"),600);
+        }
+      });
+
+      calculateMinus();
+    }
+
+    function calculateMinus() {
+      const grandCashEl = document.getElementById("grandTotalCash");
+      const cashTotal = unformatNumber(grandCashEl ? grandCashEl.textContent : "0");
+      const diterima  = unformatNumber(document.getElementById("cashDiterima").value);
+      const cashbon   = unformatNumber(document.getElementById("cashbon").value);
+
+      let minus = 0;
+      let plus  = 0;
+
+      if (cashTotal > diterima + cashbon) minus = cashTotal - diterima - cashbon;
+      if (diterima > cashTotal + cashbon) plus = diterima - cashTotal - cashbon;
+
+      const m = document.getElementById("minus");
+      if(m) {
+        m.value = formatNumber(minus);
+        m.classList.remove("minus-green","minus-red","minus-yellow");
+        if(minus === 0) m.classList.add("minus-green");
+        else m.classList.add("minus-yellow");
+      }
+
+      const p = document.getElementById("plus");
+      if(p) p.value = plus > 0 ? formatNumber(plus) : "0";
+    }
+
+    /* Validation + confirmation + save */
+    async function validateAndSave(){
+      const required = [
+        { id:"outletSelect", label:"Outlet" },
+        { id:"riderName", label:"Nama Rider" },
+        { id:"location", label:"Lokasi" },
+        { id:"noGerobak", label:"No Gerobak" },
+        { id:"adminCheckedBy", label:"Admin Checked By" },
+        { id:"cashDiterima", label:"Cash Diterima" }
+      ];
+
+      for(const r of required){
+        const el = document.getElementById(r.id);
+        if(!el || !el.value || !el.value.toString().trim()){
+          await Swal.fire({
+            title:"Data Belum Lengkap",
+            text:`Kolom ${r.label} wajib diisi.`,
+            icon:"warning",
+            confirmButtonColor:"#795548"
+          });
+          if(el) el.focus();
+          return;
+        }
+      }
+
+      if(document.querySelectorAll(".invalid").length > 0){
+        Swal.fire("Error","Ada kolom yang berisi nilai tidak valid!","error");
+        return;
+      }
+
+      const { isConfirmed } = await Swal.fire({
+        title: "Konfirmasi Kehadiran Besok",
+        text: "Apakah kamu akan narik/hadir besok?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Narik",
+        cancelButtonText: "Tidak Narik",
+        confirmButtonColor: "#43a047",
+        cancelButtonColor: "#c62828",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false
+      });
+
+      const kehadiran = isConfirmed ? "Narik" : "Tidak Narik";
+      saveData(kehadiran);
+    }
+
+    function saveData(kehadiran){
+      const btn = document.getElementById("saveBtn");
+      if(btn){ btn.disabled = true; btn.style.opacity = "0.5"; }
+      const statusEl = document.getElementById("status");
+      if(statusEl) statusEl.textContent = "⏳ Menyimpan data...";
+
+      const data = {
+        outlet: document.getElementById("outletSelect").value,
+        riderName: document.getElementById("riderName").value,
+        location: document.getElementById("location").value,
+        noGerobak: document.getElementById("noGerobak").value,
+        date: document.getElementById("date").value,
+        adminChecked: document.getElementById("adminCheckedBy").value,
+
+        cashDiterima: unformatNumber(document.getElementById("cashDiterima").value),
+        cashbon: unformatNumber(document.getElementById("cashbon").value),
+        minus: unformatNumber(document.getElementById("minus").value),
+        plus: unformatNumber(document.getElementById("plus").value),
+        notesRider: document.getElementById("notesRider").value,
+
+        timestamp: new Date().toLocaleString("id-ID",{timeZone:"Asia/Jakarta"}),
+        kehadiran,
+
+        products: [...document.querySelectorAll("#tableBody tr")].map(r=>({
+          product: r.cells[0].textContent,
+          price: unformatNumber(r.querySelector(".price").value),
+          oldStock: unformatNumber(r.querySelector(".oldStock").value),
+          newStock: unformatNumber(r.querySelector(".newStock").value),
+          totalStart: unformatNumber(r.querySelector(".totalStart").value),
+          remainOld: unformatNumber(r.querySelector(".remainOld").value),
+          remainNew: unformatNumber(r.querySelector(".remainNew").value),
+          totalRemain: unformatNumber(r.querySelector(".totalRemain").value),
+          sold: unformatNumber(r.querySelector(".sold").value),
+          revenue: unformatNumber(r.querySelector(".revenue").value),
+          qr: unformatNumber(r.querySelector(".qr").value),
+          cash: unformatNumber(r.querySelector(".cash").value),
+          notes: r.querySelector(".notes").value
+        }))
+      };
+
+      google.script.run
+        .withSuccessHandler(msg => {
+          Swal.fire({
+            title:"Berhasil!",
+            html:`Data berhasil disimpan.<br><b>Kehadiran besok:</b> ${kehadiran}`,
+            icon:"success",
+            timer:2200,
+            showConfirmButton:false
+          });
+
+          showPopup(`Data berhasil disimpan (${kehadiran})`);
+          const statusEl2 = document.getElementById("status");
+          if(statusEl2) statusEl2.textContent = msg;
+          // tombol tetap OFF sampai user klik Input Baru
+        })
+        .withFailureHandler(err=>{
+          Swal.fire("Gagal!", err.message, "error");
+          const statusEl3 = document.getElementById("status");
+          if(statusEl3) statusEl3.textContent = "❌ " + err.message;
+          if(btn){ btn.disabled = false; btn.style.opacity = "1"; }
+        })
+        .saveRiderData(data);
+    }
+
+    function showPopup(msg){
+      const pop = document.getElementById("popup");
+      pop.textContent = msg;
+      pop.classList.add("show");
+      setTimeout(()=>pop.classList.remove("show"),3000);
+    }
+
+    function resetForm(){
+      document.querySelectorAll("#tableBody input, #tableBody textarea").forEach(e=>{
+        if(!e.classList.contains("price")) e.value = "";
+      });
+      document.querySelectorAll("tfoot td[id]").forEach(td=>td.textContent="0");
+      ["riderName","location","adminCheckedBy","cashDiterima","cashbon","minus"].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = "";
+      });
+      const g = document.getElementById("noGerobak");
+      if(g) g.value = "ECL-";
+      const dateEl = document.getElementById("date");
+      if(dateEl) dateEl.value = new Date().toISOString().substring(0,10);
+      const cb = document.getElementById("cashbon");
+      if(cb) cb.value = "0";
+      const p = document.getElementById("plus");
+      if(p) p.value = "0";
+      const notes = document.getElementById("notesRider");
+      if(notes) notes.value = "";
+      const outlet = document.getElementById("outletSelect");
+      if(outlet) outlet.value = "";
+      const btn = document.getElementById("saveBtn");
+      if(btn){ btn.disabled = false; btn.style.opacity = "1"; }
+      const statusEl = document.getElementById("status");
+      if(statusEl) statusEl.textContent = "";
+    }
+
+    /* Floating save visibility */
+    window.addEventListener("scroll", ()=>{
+      const b = document.querySelector(".floating-save");
+      b.style.display = window.scrollY > 400 ? "block" : "none";
+    });
+  </script>
+</body>
 </html>
