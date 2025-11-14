@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Form Penjualan Rider — Layout B</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      /* ---------- Basic ---------- */
+      :root{
+        --brown:#795548;
+        --brown-dark:#5d4037;
+        --bg:#f3f2ef;
+        --panel:#fff;
+        --muted:#d7ccc8;
+        --accent:#43a047;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        font-family:"Poppins", sans-serif;
+        background:var(--bg);
+        color:#3e2723;
+        -webkit-font-smoothing:antialiased;
+      }
+
+      /* ---------- Top bar / marquee ---------- */
+      .marquee-container{
+        background:var(--brown);
+        color:#fff8e1;
+        padding:6px 0;
+        overflow:hidden;
+        white-space:nowrap;
+        font-size:15px;
+      }
+      .marquee-text{display:inline-block;padding-left:100%;animation:marquee 18s linear infinite}
+      @keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+      .header{
+        display:flex;
+        align-items:center;
+        gap:12px;
+        background:linear-gradient(#6d4c41,#5d4037);
+        color:#fff;
+        padding:10px 20px;
+        box-shadow:0 2px 6px rgba(0,0,0,0.12);
+      }
+      .header img{width:40px;height:40px;border-radius:8px}
+      .header h1{font-size:18px;margin:0;font-weight:600}
+
+      /* ---------- Container ---------- */
+      .form-container{
+        max-width:1200px;
+        margin:24px auto;
+        background:var(--panel);
+        border-radius:12px;
+        padding:22px;
+        box-shadow:0 6px 18px rgba(0,0,0,0.06);
+      }
+      h2{text-align:center;margin:6px 0 20px;color:var(--brown)}
+
+      /* ---------- Top form (Layout B) ---------- */
+      .top-form{
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:16px;
+        margin-bottom:12px;
+        align-items:end;
+      }
+      .top-form-row2{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:16px;
+        margin-bottom:20px;
+        align-items:end;
+      }
+      .input-group{display:flex;flex-direction:column;gap:6px}
+      .input-group label{font-weight:600;font-size:13px;color:#4e342e}
+      input[type="text"], input[list], input[type="date"], textarea, select {
+        padding:10px 12px;
+        font-size:14px;
+        border-radius:8px;
+        border:1px solid var(--muted);
+        background:#fffdf8;
+        width:100%;
+      }
+      input[list]::placeholder{color:#999}
+      input[type="date"]{text-align:left}
+      input:focus, textarea:focus, select:focus{
+        outline:none;
+        border-color:var(--brown);
+        box-shadow:0 0 6px rgba(121,85,72,0.12);
+      }
+
+      /* ---------- Table ---------- */
+      .table-wrapper{width:100%;overflow-x:auto;border-radius:8px;margin-bottom:14px}
+      table{
+        width:100%;
+        border-collapse:collapse;
+        min-width:1000px;
+        font-size:13.2px;
+      }
+      th, td{border:1px solid #ddd;padding:8px;text-align:center}
+      th{background:var(--brown);color:#fff;position:sticky;top:0;font-weight:700}
+      td:first-child{text-align:left;padding-left:14px}
+      .stock-section{background:#FFF3E0}
+      .remain-section{background:#E3F2FD}
+      .sales-section{background:#E8F5E9}
+      .cash-section{background:#F3E5F5}
+      #salesTable tr:hover td{background:#fff9c4 !important}
+      tfoot td{font-weight:700;background:#efefef}
+
+      /* small inputs inside table align right */
+      #salesTable input[type="text"], #salesTable textarea{
+        width:100%;
+        padding:6px 8px;
+        border-radius:6px;
+        border:1px solid #e0dcd8;
+        text-align:right;
+        background:#fff;
+        font-size:13px;
+      }
+      #salesTable textarea{resize:none;text-align:left}
+
+      /* highlight animation */
+      .highlight{background:#C8E6C9 !important;transition:background 1s}
+
+      /* ---------- Bottom inputs ---------- */
+      .bottom-inputs{
+        display:grid;
+        grid-template-columns:1fr 1fr 1fr;
+        gap:16px;
+        align-items:end;
+        margin-top:10px;
+      }
+      .bottom-inputs .input-group input{font-size:14px;padding:10px}
+
+      /* admin input style (match other bottom inputs) */
+      .admin-input{
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+      }
+      .admin-input label{font-weight:600;color:#4e342e}
+      .admin-input input{padding:10px;border-radius:8px;border:1px solid var(--muted);background:#fffdf8}
+
+      /* ---------- Buttons ---------- */
+      .controls{display:flex;gap:12px;margin-top:18px;align-items:center}
+      .save-btn,.reset-btn{
+        padding:10px 16px;border-radius:8px;border:none;cursor:pointer;color:#fff;font-weight:600;
+      }
+      .save-btn{background:var(--brown)}
+      .save-btn:hover{background:var(--brown-dark)}
+      .reset-btn{background:#607d8b}
+      .reset-btn:hover{background:#455a64}
+
+      .floating-save{
+        position:fixed;right:20px;bottom:20px;background:var(--brown);color:#fff;border:none;border-radius:50%;
+        width:56px;height:56px;font-size:20px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,0.12);display:none;z-index:1200;
+      }
+
+      /* popup small */
+      .popup{position:fixed;top:20px;right:20px;background:var(--accent);color:#fff;padding:12px 18px;border-radius:8px;z-index:2000;opacity:0;transform:translateY(-10px);transition:all .3s}
+      .popup.show{opacity:1;transform:translateY(0)}
+
+      /* responsive tweaks */
+      @media (max-width:980px){
+        .top-form{grid-template-columns:1fr;align-items:stretch}
+        .top-form-row2{grid-template-columns:1fr}
+        .bottom-inputs{grid-template-columns:1fr}
+        table{min-width:900px}
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="marquee-container"><div id="welcomeText" class="marquee-text">Hi Rider, semangat ya untuk hari ini ☕</div></div>
+
+    <div class="header">
+      <img src="https://raw.githubusercontent.com/yohanesbima/ank/main/WhatsApp%20Image%202025-11-09%20at%2003.17.03.png" alt="Logo">
+      <h1>Atas Nama Kopi — Express</h1>
+    </div>
+
+    <div class="form-container">
+      <h2>Form Penjualan Rider</h2>
+
+      <!-- TOP FORM LAYOUT B -->
+      <div class="top-form">
+        <div class="input-group">
+          <label>Nama Rider</label>
+          <input list="riderList" id="riderName" placeholder="Pilih atau ketik nama rider...">
+          <datalist id="riderList"></datalist>
+        </div>
+
+        <div class="input-group">
+          <label>Lokasi</label>
+          <input list="locationList" id="location" placeholder="Pilih atau ketik lokasi...">
+          <datalist id="locationList"></datalist>
+        </div>
+
+        <div class="input-group">
+          <label>No Gerobak</label>
+          <!-- keep ID exactly 'noGerobak' to match server-side expectations -->
+          <input list="gerobakList" id="noGerobak" placeholder="Pilih atau ketik No Gerobak..." value="ECL-">
+          <datalist id="gerobakList"></datalist>
+        </div>
+      </div>
+
+      <div class="top-form-row2">
+        <div class="input-group">
+          <label>Tanggal</label>
+          <input type="date" id="date">
+        </div>
+
+        <div class="input-group">
+          <label>Admin Checked By</label>
+          <input list="adminList" id="adminCheckedBy" placeholder="Pilih atau ketik admin...">
+          <datalist id="adminList"></datalist>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-wrapper">
+        <table id="salesTable">
+          <thead>
+            <tr>
+              <th>Produk</th><th>Harga</th><th>Stok Lama</th><th>Stok Baru</th><th>Total Awal</th>
+              <th>Sisa Lama</th><th>Sisa Baru</th><th>Total Sisa</th><th>Terjual</th>
+              <th>Pendapatan</th><th>Cash</th><th>QR</th><th>Catatan</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" style="text-align:right;">GRAND TOTAL</td>
+              <td id="grandOldStock">0</td><td id="grandNewStock">0</td><td id="grandTotalStart">0</td>
+              <td id="grandRemainOld">0</td><td id="grandRemainNew">0</td><td id="grandTotalRemain">0</td>
+              <td id="grandTotalSold">0</td><td id="grandTotalRevenue">0</td>
+              <td id="grandTotalCash">0</td><td id="grandTotalQR">0</td><td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- BOTTOM INPUTS -->
+      <div class="bottom-inputs">
+        <div class="input-group"><label>Cash Diterima</label><input type="text" id="cashDiterima" class="numeric"></div>
+        <div class="input-group"><label>Cashbon</label><input type="text" id="cashbon" class="numeric"></div>
+        <div class="input-group"><label>Minus</label><input type="text" id="minus" class="numeric" readonly></div>
+      </div>
+
+      <div class="controls">
+        <button class="save-btn" id="saveBtn" onclick="validateAndSave()">💾 Simpan Data</button>
+        <button class="reset-btn" onclick="resetForm()">🆕 Input Baru</button>
+        <span id="status" style="margin-left:12px;color:#444;font-weight:600"></span>
+      </div>
+
+    </div>
+
+    <button class="floating-save" onclick="validateAndSave()">💾</button>
+    <div id="popup" class="popup">✅ Data berhasil disimpan</div>
+
+    <script>
+      /* ========== Greeting (unchanged) ========== */
+      google.script.run.withSuccessHandler(fullname => {
+        const name = fullname || "Rider";
+        if (name === "Nicky Zahara") {
+          const messages = [
+            "🌞 Hari ini bisa jadi hari terbaikmu, asal kamu mau tersenyum duluan 😄",
+            "☕ Semangat Nicky! Kamu bikin kopi seenak senyum kamu hari ini 💫",
+            "🚴‍♀️ Satu langkah kecil hari ini bisa jadi awal luar biasa besok 💥",
+            "💐 Jangan lupa bahagia, Nicky! Dunia butuh energi positifmu 🌸",
+            "🔥 Semangat itu menular, kamu penyebabnya hari ini 😎",
+            "💪 Kopinya boleh pahit, tapi harimu jangan ☕"
+          ];
+          document.getElementById("welcomeText").textContent =
+            messages[Math.floor(Math.random() * messages.length)];
+        } else {
+          const normalTexts = [
+            `☕ Semangat kerja hari ini, ${name}!`,
+            `💪 Jalani hari dengan penuh semangat, ${name}!`,
+            `🌞 Selamat beraktivitas ${name}, tetap positif ya!`,
+            `🚴‍♂️ Yuk ${name}, kita buat hari ini produktif!`
+          ];
+          document.getElementById("welcomeText").textContent =
+            normalTexts[Math.floor(Math.random() * normalTexts.length)];
+        }
+      }).getUserName();
+
+      /* ========== Load master data (unchanged behavior) ========== */
+      google.script.run.withSuccessHandler(renderPage).getMasterData();
+
+      function renderPage(d){
+        // expect d = { products, admins, riders, locations, gerobakList } or similar
+        const {products, admins, riders, locations, gerobakList} = d;
+        renderProducts(products || []);
+        renderDropdown(document.getElementById("adminList"), admins || []);
+        renderDropdown(document.getElementById("riderList"), riders || []);
+        renderDropdown(document.getElementById("locationList"), locations || []);
+        renderDropdown(document.getElementById("gerobakList"), gerobakList || []);
+
+        // set today's date
+        document.getElementById("date").value = new Date().toISOString().substring(0,10);
+      }
+
+      function renderDropdown(datalistElm, list){
+        if(!datalistElm) return;
+        datalistElm.innerHTML = "";
+        (list || []).sort((a,b)=> String(a).localeCompare(String(b))).forEach(v=>{
+          const o = document.createElement("option");
+          o.value = v;
+          datalistElm.appendChild(o);
+        });
+      }
+
+      function formatNumber(v){ return isNaN(v) || v === "" ? "" : Number(v).toLocaleString("en-US"); }
+      function unformatNumber(v){ return Number((v||"").toString().replace(/,/g,"")) || 0; }
+
+      /* ========== Render products (unchanged logic) ========== */
+      function renderProducts(products){
+        const tb = document.getElementById("tableBody");
+        tb.innerHTML = "";
+        (products || []).forEach(p=>{
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${p.product}</td>
+            <td><input type="text" class="price" value="${formatNumber(p.price)}" readonly></td>
+
+            <td class="stock-section"><input type="text" class="oldStock numeric"></td>
+            <td class="stock-section"><input type="text" class="newStock numeric"></td>
+            <td class="stock-section"><input type="text" class="totalStart" readonly></td>
+
+            <td class="remain-section"><input type="text" class="remainOld numeric"></td>
+            <td class="remain-section"><input type="text" class="remainNew numeric"></td>
+            <td class="remain-section"><input type="text" class="totalRemain" readonly></td>
+
+            <td class="sales-section"><input type="text" class="sold" readonly></td>
+            <td class="sales-section"><input type="text" class="revenue" readonly></td>
+
+            <td class="cash-section"><input type="text" class="cash" readonly></td>
+            <td class="cash-section"><input type="text" class="qr numeric"></td>
+
+            <td><textarea class="notes" rows="1"></textarea></td>
+          `;
+          tb.appendChild(tr);
+        });
+      }
+
+      /* ========== Input listener (unchanged) ========== */
+      document.addEventListener("input", e => {
+        if(e.target.classList.contains("numeric")){
+          const raw = e.target.value.replace(/,/g,"");
+          if(isNaN(raw)) e.target.classList.add("invalid");
+          else { e.target.classList.remove("invalid"); e.target.value = formatNumber(raw); }
+        }
+
+        if(["oldStock","newStock","remainOld","remainNew","qr"].some(cls => e.target.classList.contains(cls))){
+          calculateRow(e.target.closest("tr"));
+          updateGrandTotal();
+        }
+
+        if(["cashDiterima","cashbon"].includes(e.target.id)) calculateMinus();
+      });
+
+      /* ========== Keyboard nav (unchanged) ========== */
+      document.addEventListener("keydown", e => {
+        const active = document.activeElement;
+        if(!active.matches("input,textarea")) return;
+        const cells = Array.from(document.querySelectorAll("#tableBody input, #tableBody textarea"));
+        const i = cells.indexOf(active);
+        let next = null;
+        if(e.key === "ArrowRight") next = cells[i+1];
+        else if(e.key === "ArrowLeft") next = cells[i-1];
+        else if(e.key === "ArrowDown" || e.key === "Enter") next = cells[i+13];
+        else if(e.key === "ArrowUp") next = cells[i-13];
+        if(next){ e.preventDefault(); next.focus(); next.select(); }
+      });
+
+      /* ========== Row calc & grand totals (unchanged) ========== */
+      function calculateRow(r){
+        const price = unformatNumber(r.querySelector(".price").value);
+        const oldS = unformatNumber(r.querySelector(".oldStock").value);
+        const newS = unformatNumber(r.querySelector(".newStock").value);
+        const rOld = unformatNumber(r.querySelector(".remainOld").value);
+        const rNew = unformatNumber(r.querySelector(".remainNew").value);
+        const qr = unformatNumber(r.querySelector(".qr").value);
+
+        const totalStart = oldS + newS;
+        const totalRemain = rOld + rNew;
+        const sold = totalStart - totalRemain;
+        const revenue = sold * price;
+        const cash = revenue - qr;
+
+        r.querySelector(".totalStart").value = formatNumber(totalStart);
+        r.querySelector(".totalRemain").value = formatNumber(totalRemain);
+        r.querySelector(".sold").value = formatNumber(sold);
+        r.querySelector(".revenue").value = formatNumber(revenue);
+        r.querySelector(".cash").value = formatNumber(cash);
+      }
+
+      function updateGrandTotal(){
+        const t = {oldStock:0,newStock:0,totalStart:0,remainOld:0,remainNew:0,totalRemain:0,sold:0,revenue:0,qr:0,cash:0};
+        document.querySelectorAll("#tableBody tr").forEach(r=>{
+          t.oldStock += unformatNumber(r.querySelector(".oldStock").value);
+          t.newStock += unformatNumber(r.querySelector(".newStock").value);
+          t.totalStart += unformatNumber(r.querySelector(".totalStart").value);
+          t.remainOld += unformatNumber(r.querySelector(".remainOld").value);
+          t.remainNew += unformatNumber(r.querySelector(".remainNew").value);
+          t.totalRemain += unformatNumber(r.querySelector(".totalRemain").value);
+          t.sold += unformatNumber(r.querySelector(".sold").value);
+          t.revenue += unformatNumber(r.querySelector(".revenue").value);
+          t.qr += unformatNumber(r.querySelector(".qr").value);
+          t.cash += unformatNumber(r.querySelector(".cash").value);
+        });
+
+        const fields = [
+          ["grandOldStock", t.oldStock],["grandNewStock", t.newStock],
+          ["grandTotalStart", t.totalStart],["grandRemainOld", t.remainOld],
+          ["grandRemainNew", t.remainNew],["grandTotalRemain", t.totalRemain],
+          ["grandTotalSold", t.sold],["grandTotalRevenue", t.revenue],
+          ["grandTotalQR", t.qr],["grandTotalCash", t.cash]
+        ];
+
+        fields.forEach(([id,val])=>{
+          const el = document.getElementById(id);
+          const newVal = formatNumber(val);
+          if(el.textContent !== newVal){
+            el.textContent = newVal;
+            el.classList.add("highlight");
+            setTimeout(()=>el.classList.remove("highlight"),600);
+          }
+        });
+
+        calculateMinus();
+      }
+
+      function calculateMinus(){
+        const cashTotal = unformatNumber(document.getElementById("grandTotalCash").textContent);
+        const diterima = unformatNumber(document.getElementById("cashDiterima").value);
+        const cashbon = unformatNumber(document.getElementById("cashbon").value);
+        const minus = cashTotal - diterima - cashbon;
+        const el = document.getElementById("minus");
+        el.value = formatNumber(minus);
+        el.classList.remove("minus-green","minus-red","minus-yellow");
+        if(minus === 0) el.classList.add("minus-green");
+        else if(minus < 0) el.classList.add("minus-red");
+        else el.classList.add("minus-yellow");
+      }
+
+      /* ========== Validation + presence popup ========== */
+      async function validateAndSave(){
+        const required = [
+          { id:"riderName", label:"Nama Rider" },
+          { id:"location", label:"Lokasi" },
+          { id:"noGerobak", label:"No Gerobak" },
+          { id:"adminCheckedBy", label:"Admin Checked By" },
+          { id:"cashDiterima", label:"Cash Diterima" }
+        ];
+
+        for(const r of required){
+          const el = document.getElementById(r.id);
+          if(!el.value || !el.value.toString().trim()){
+            await Swal.fire({ title:"Data Belum Lengkap", text:`Kolom ${r.label} wajib diisi.`, icon:"warning", confirmButtonColor:varOr("#795548") });
+            el.focus();
+            return;
+          }
+        }
+
+        if(document.querySelectorAll(".invalid").length > 0){
+          Swal.fire("Error","Ada kolom yang berisi nilai tidak valid!","error");
+          return;
+        }
+
+        const { isConfirmed } = await Swal.fire({
+          title:"Konfirmasi Kehadiran Besok",
+          text:"Apakah kamu akan narik/hadir besok?",
+          icon:"question",
+          showCancelButton:true,
+          confirmButtonText:"Narik",
+          cancelButtonText:"Tidak Narik",
+          confirmButtonColor:"#43a047",
+          cancelButtonColor:"#c62828"
+        });
+
+        const kehadiran = isConfirmed ? "Narik" : "Tidak Narik";
+        saveData(kehadiran);
+      }
+
+      // small helper to avoid inline var expression earlier
+      function varOr(fallback){ return fallback; }
+
+      /* ========== Save to Apps Script (unchanged behavior) ========== */
+      function saveData(kehadiran){
+        const btn = document.getElementById("saveBtn");
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+        document.getElementById("status").textContent = "⏳ Menyimpan data...";
+
+        const data = {
+          riderName: document.getElementById("riderName").value,
+          location: document.getElementById("location").value,
+          noGerobak: document.getElementById("noGerobak").value,
+          date: document.getElementById("date").value,
+          adminChecked: document.getElementById("adminCheckedBy").value,
+
+          cashDiterima: unformatNumber(document.getElementById("cashDiterima").value),
+          cashbon: unformatNumber(document.getElementById("cashbon").value),
+          minus: unformatNumber(document.getElementById("minus").value),
+
+          timestamp: new Date().toLocaleString("id-ID",{timeZone:"Asia/Jakarta"}),
+          kehadiran,
+
+          products: [...document.querySelectorAll("#tableBody tr")].map(r=>({
+            product: r.cells[0].textContent,
+            price: unformatNumber(r.querySelector(".price").value),
+            oldStock: unformatNumber(r.querySelector(".oldStock").value),
+            newStock: unformatNumber(r.querySelector(".newStock").value),
+            totalStart: unformatNumber(r.querySelector(".totalStart").value),
+            remainOld: unformatNumber(r.querySelector(".remainOld").value),
+            remainNew: unformatNumber(r.querySelector(".remainNew").value),
+            totalRemain: unformatNumber(r.querySelector(".totalRemain").value),
+            sold: unformatNumber(r.querySelector(".sold").value),
+            revenue: unformatNumber(r.querySelector(".revenue").value),
+            qr: unformatNumber(r.querySelector(".qr").value),
+            cash: unformatNumber(r.querySelector(".cash").value),
+            notes: r.querySelector(".notes").value
+          }))
+        };
+
+        google.script.run
+          .withSuccessHandler(msg => {
+            Swal.fire({
+              title:"Berhasil!",
+              html:`Data berhasil disimpan.<br><b>Kehadiran besok:</b> ${kehadiran}`,
+              icon:"success",
+              timer:2200,
+              showConfirmButton:false
+            });
+
+            showPopup(`Data berhasil disimpan (${kehadiran})`);
+            document.getElementById("status").textContent = msg;
+
+            // tombol akan tetap OFF sampai user klik 'Input Baru' (sesuai permintaan)
+          })
+          .withFailureHandler(err=>{
+            Swal.fire("Gagal!", err.message, "error");
+            document.getElementById("status").textContent = "❌ " + err.message;
+            // kembalikan tombol kalau ada error
+            btn.disabled = false;
+            btn.style.opacity = "1";
+          })
+          .saveRiderData(data);
+      }
+
+      /* ========== Popup small ========== */
+      function showPopup(msg){
+        const pop = document.getElementById("popup");
+        pop.textContent = msg;
+        pop.classList.add("show");
+        setTimeout(()=>pop.classList.remove("show"),3000);
+      }
+
+      /* ========== Reset (restores save button and defaults) ========== */
+      function resetForm(){
+        document.querySelectorAll("#tableBody input, #tableBody textarea").forEach(e=>{
+          if(!e.classList.contains("price")) e.value = "";
+        });
+        document.querySelectorAll("tfoot td[id]").forEach(td=>td.textContent="0");
+        ["riderName","location","adminCheckedBy","cashDiterima","cashbon","minus"].forEach(id=>{
+          const el = document.getElementById(id);
+          if(el) el.value = "";
+        });
+        // restore default gerobak prefix
+        const g = document.getElementById("noGerobak");
+        if(g) g.value = "ECL-";
+        // reset date
+        document.getElementById("date").value = new Date().toISOString().substring(0,10);
+        // enable save
+        const btn = document.getElementById("saveBtn");
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        document.getElementById("status").textContent = "";
+      }
+
+      /* ========== Floating save visibility ========== */
+      window.addEventListener("scroll", ()=>{
+        const b = document.querySelector(".floating-save");
+        b.style.display = window.scrollY > 400 ? "block" : "none";
+      });
+
+    </script>
+  </body>
+</html>
