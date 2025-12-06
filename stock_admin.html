@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Stock Admin — Atasnama Kopi</title>
+
+<!-- SweetAlert2 -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+:root{
+  --brown:#6d4c41;
+  --brown-dark:#5d4037;
+  --cream:#fffdf8;
+  --muted:#efe9e4;
+  --accent:#a97452;
+  --container-width:1920px;
+  --sticky-header-top:132px; /* jarak header summary dari top viewport */
+  --print-header-bg:#f3e3dd;
+  --print-total-bg:#e8d5ca;
+
+  --radius-lg:18px;
+  --radius-md:12px;
+  --shadow-soft:0 18px 35px rgba(0,0,0,0.06);
+  --shadow-card:0 10px 25px rgba(93,64,55,0.13);
+}
+
+/* RESET */
+*,
+*::before,
+*::after{
+  box-sizing:border-box;
+}
+
+/* BODY */
+body{
+  margin:0;
+  font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  background:
+    radial-gradient(circle at top left,rgba(255,255,255,0.9),transparent 55%),
+    radial-gradient(circle at bottom right,rgba(248,242,236,0.95),#f1e6dc);
+  color:#291814;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  transition:background 0.4s ease;
+  opacity:0;
+  transform:translateY(10px);
+}
+body.page-enter{
+  opacity:1;
+  transform:translateY(0);
+  transition:opacity 0.4s ease,transform 0.4s ease;
+}
+
+/* TOP NAV */
+.top-nav{
+  position:sticky;
+  top:0;
+  z-index:200;
+  padding:10px 0 4px;
+  backdrop-filter:blur(14px);
+  background:linear-gradient(
+    to bottom,
+    rgba(66,41,32,0.96),
+    rgba(66,41,32,0.92)
+  );
+}
+.top-nav-inner{
+  max-width:var(--container-width);
+  margin:0 auto;
+  padding:6px 16px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.brand-wrap{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.brand-wrap img{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  object-fit:cover;
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+.brand-text-main{
+  font-weight:800;
+  font-size:17px;
+  letter-spacing:.03em;
+  color:#fff8f1;
+}
+.brand-text-sub{
+  font-size:12px;
+  opacity:.9;
+  color:#fff3e0;
+}
+
+/* nav pill */
+.nav{
+  display:flex;
+  gap:6px;
+  padding:3px;
+  border-radius:999px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.16);
+}
+.nav-item{
+  padding:6px 13px;
+  border-radius:999px;
+  cursor:pointer;
+  font-weight:600;
+  font-size:13px;
+  color:#fbe9e7;
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  transition:background 0.2s ease,color 0.2s ease,transform 0.15s ease;
+}
+.nav-item::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:radial-gradient(circle at top,rgba(255,255,255,0.35),transparent 55%);
+  opacity:0;
+  transition:opacity 0.25s ease;
+}
+.nav-item:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,0.08);
+}
+.nav-item.active{
+  background:#fff3e0;
+  color:var(--brown-dark);
+  box-shadow:0 8px 20px rgba(0,0,0,0.25);
+}
+.nav-item.active::before{
+  opacity:1;
+}
+
+/* MAIN CONTAINER */
+.container{
+  max-width:var(--container-width);
+  margin:18px auto 32px;
+  padding:0 16px;
+}
+body.assign-mode .container{
+  max-width:none;
+  margin:18px 360px 32px 24px;
+  padding-right:8px;
+}
+
+/* SECTION CARD */
+.section-card{
+  background:rgba(255,253,248,0.98);
+  border-radius:var(--radius-lg);
+  padding:18px 18px 16px;
+  margin-bottom:18px;
+  border:1px solid rgba(222,206,192,0.9);
+  box-shadow:var(--shadow-card);
+  position:relative;
+  overflow:hidden;
+  animation:cardFadeSlide 0.35s ease-out;
+}
+.section-card::before{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background:
+    radial-gradient(circle at top left,rgba(255,255,255,0.3),transparent 60%),
+    radial-gradient(circle at bottom right,rgba(245,231,220,0.35),transparent 55%);
+  opacity:0.7;
+  pointer-events:none;
+}
+.section-header{
+  position:relative;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.section-title{
+  margin:0;
+  color:var(--brown-dark);
+  font-size:18px;
+  letter-spacing:0.02em;
+}
+.section-subtitle{
+  font-size:13px;
+  color:#6d4c41;
+  opacity:0.85;
+}
+
+/* small meta pill */
+.meta-pill{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#f7ebe4;
+  border:1px solid #e2c7b7;
+  color:#5d4037;
+}
+
+/* form row */
+.form-row{
+  margin-top:14px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:flex-end;
+}
+
+/* LABEL & INPUTS */
+.label{
+  font-size:12px;
+  color:#5d4037;
+  font-weight:600;
+  margin-bottom:4px;
+}
+.input,
+.select{
+  padding:8px 10px;
+  border:1px solid #e0cec0;
+  border-radius:10px;
+  background:rgba(255,250,245,0.95);
+  font-size:14px;
+  color:#3e2723;
+  outline:none;
+  min-height:36px;
+  width:100%;
+  transition:border-color 0.15s ease,box-shadow 0.15s ease,background 0.15s ease,transform 0.08s ease;
+}
+.input:focus,
+.select:focus{
+  border-color:var(--accent);
+  background:#fffdf8;
+  box-shadow:0 0 0 1px rgba(218,164,120,0.45),0 0 0 6px rgba(218,164,120,0.18);
+  transform:translateY(-0.5px);
+}
+.small-note{
+  font-size:12px;
+  color:#7a5a4a;
+}
+
+/* BUTTONS */
+.btn-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top:12px;
+}
+button{
+  font-family:inherit;
+}
+.save-btn{
+  background:linear-gradient(135deg,#6d4c41,#4e342e);
+  color:white;
+  padding:9px 15px;
+  border-radius:999px;
+  border:none;
+  font-weight:700;
+  cursor:pointer;
+  font-size:13px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 12px 28px rgba(93,64,55,0.32);
+  transition:transform 0.13s ease,box-shadow 0.13s ease,filter 0.15s ease;
+}
+.save-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 18px 36px rgba(93,64,55,0.35);
+  filter:brightness(1.04);
+}
+.save-btn:active{
+  transform:translateY(1px) scale(0.99);
+  box-shadow:0 6px 14px rgba(93,64,55,0.25);
+}
+.save-btn:disabled{
+  opacity:0.65;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+.load-btn{
+  padding:8px 13px;
+  border-radius:999px;
+  border:1px solid #dac7b9;
+  background:#fff7ec;
+  cursor:pointer;
+  font-weight:600;
+  font-size:13px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  color:#4e342e;
+  box-shadow:0 8px 20px rgba(219,184,153,0.38);
+  transition:transform 0.13s ease,box-shadow 0.13s ease,background 0.12s ease;
+}
+.load-btn:hover{
+  transform:translateY(-1px);
+  background:#fffbf6;
+  box-shadow:0 12px 26px rgba(219,184,153,0.45);
+}
+.load-btn:active{
+  transform:translateY(1px) scale(0.99);
+  box-shadow:0 4px 10px rgba(219,184,153,0.3);
+}
+
+.add-rider-btn{
+  background:linear-gradient(135deg,#43a047,#2e7d32);
+  color:white;
+  padding:8px 13px;
+  border-radius:999px;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+  font-size:13px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 10px 26px rgba(67,160,71,0.45);
+  transition:transform 0.13s ease,box-shadow 0.13s ease,filter 0.15s ease;
+}
+.add-rider-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 16px 34px rgba(67,160,71,0.55);
+  filter:brightness(1.03);
+}
+.add-rider-btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  box-shadow:none;
+}
+
+.print-btn{
+  background:linear-gradient(135deg,#2e7d32,#1b5e20);
+  color:white;
+  padding:8px 14px;
+  border:none;
+  border-radius:999px;
+  font-weight:700;
+  cursor:pointer;
+  font-size:13px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 12px 28px rgba(27,94,32,0.52);
+  transition:transform 0.13s ease,box-shadow 0.13s ease,filter 0.15s ease;
+}
+.print-btn:hover{
+  transform:translateY(-1px);
+  box-shadow:0 18px 36px rgba(27,94,32,0.6);
+  filter:brightness(1.03);
+}
+
+/* ASSIGN TOP (sticky bar atas summary + rider) */
+.assign-top{
+  position:sticky;
+  top:64px; /* kira-kira tinggi nav */
+  z-index:220;
+  background:rgba(255,253,248,0.98);
+  padding:12px 14px 10px;
+  border-radius:var(--radius-md);
+  border:1px solid rgba(225,210,196,0.9);
+  box-shadow:0 14px 30px rgba(0,0,0,0.08);
+  margin:-4px -4px 12px;
+}
+.assign-top .controls{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.assign-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:10px;
+  gap:12px;
+}
+.assign-header-left{
+  flex:1;
+  min-width:0;
+}
+.assign-header-right{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+/* =========================================================
+   SUMMARY TABLE LAYOUT (Layout A: kiri fix, kanan scroll-X)
+========================================================= */
+
+.assign-summary-shell{
+  margin-top:8px;
+}
+
+.combined-flex{
+  display:flex;
+  align-items:flex-start;
+  gap:0;
+  width:100%;
+  position:relative;
+  overflow:visible; /* jangan jadi scroll container */
+}
+
+/* LEFT SUMMARY */
+.summary-wrap{
+  flex:0 0 48%;
+  max-width:48%;
+  background:#fffaf5;
+  border:1px solid #e7d6c7;
+  border-right:none;
+  border-radius:14px 0 0 14px;
+  box-shadow:4px 0 15px rgba(0,0,0,0.05);
+  position:relative;
+  overflow:visible; /* BUKAN auto/hidden, biar sticky ikut viewport */
+}
+
+/* RIGHT RIDER SUMMARY */
+.rider-scroll-wrap{
+  flex:1 1 52%;
+  min-width:0;
+  background:#fffdf8;
+  border:1px solid #ead7c9;
+  border-left:none;
+  border-radius:0 14px 14px 0;
+  position:relative;
+  overflow-x:auto;   /* cuma horizontal scroll */
+  overflow-y:visible;
+}
+
+/* TABLE BASE */
+.combined-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  margin:0;
+}
+
+.combined-table th,
+.combined-table td{
+  border:1px solid #f3ede8;
+  padding:6px 10px;
+  font-size:13px;
+  white-space:nowrap;
+  vertical-align:middle;
+  background:transparent;
+}
+
+/* First column left: produk */
+.summary-wrap .combined-table th:first-child,
+.summary-wrap .combined-table td:first-child{
+  text-align:left;
+  padding-left:12px;
+  font-weight:700;
+  color:#4e342e;
+  min-width:160px;
+  max-width:320px;
+  white-space:normal;
+  word-break:break-word;
+}
+
+/* numeric columns summary center */
+.summary-wrap .combined-table td:not(:first-child){
+  text-align:center;
+}
+
+/* rider columns center + min width */
+.rider-scroll-wrap .combined-table th,
+.rider-scroll-wrap .combined-table td{
+  text-align:center;
+  min-width:76px;
+}
+
+/* STICKY HEADER — POSISI KE KOTAK HIJAU (var --sticky-header-top) */
+.combined-table thead th{
+  position:sticky;
+  top:var(--sticky-header-top);
+  z-index:300;
+  background:#fbf2ec !important;
+  border-bottom:2px solid #ead7c9 !important;
+  text-align:center;
+  font-weight:700;
+  font-size:13px;
+  line-height:1;
+  height:40px;
+  padding-top:0;
+  padding-bottom:0;
+  box-shadow:0 2px 6px rgba(0,0,0,0.04);
+}
+
+
+
+/* total footer row left + right */
+.footer-total td{
+  background:#f7e8e4 !important;
+  border-top:2px solid #e2c6bf !important;
+  font-weight:700 !important;
+  color:#3e2723;
+  padding:10px !important;
+}
+
+/* Highlight Row (Optional) */
+.summary-row-highlight td{
+  background-color:#ffe7c2 !important;
+  transition:background .2s ease;
+}
+
+/* Hover highlight untuk kedua tabel */
+.row-hover td{
+  background:#fff0d6 !important;
+  transition:background .15s ease;
+}
+
+/* small tweaks for perfect alignment */
+.left-table td,
+.left-table th,
+.right-table td,
+.right-table th{
+  box-sizing:border-box;
+}
+
+/* SCROLLBAR CUSTOM HORIZONTAL RIDER */
+.rider-scroll-wrap::-webkit-scrollbar{
+  height:10px;
+}
+.rider-scroll-wrap::-webkit-scrollbar-track{
+  background:#f5efe9;
+  border-bottom-right-radius:14px;
+}
+.rider-scroll-wrap::-webkit-scrollbar-thumb{
+  background:#d7ccc4;
+  border-radius:6px;
+  border:2px solid #f5efe9;
+}
+.rider-scroll-wrap::-webkit-scrollbar-thumb:hover{
+  background:#cbbbae;
+}
+
+/* RIDER SIDE PANEL (Kanan Fixed Input) */
+.rider-side-panel{
+  position:fixed;
+  top:74px;
+  right:16px;
+  width:340px;
+  max-height:calc(100vh - 92px);
+  background:rgba(255,253,248,0.98);
+  border-radius:18px;
+  border:1px solid rgba(224,206,190,0.96);
+  box-shadow:0 18px 35px rgba(0,0,0,0.16);
+  display:none;
+  flex-direction:column;
+  z-index:190;
+}
+body.assign-mode .rider-side-panel{
+  display:flex;
+}
+.rider-side-header{
+  padding:10px 14px 6px;
+  border-bottom:1px solid #edd7c8;
+  font-size:12px;
+  color:#6d4c41;
+}
+.rider-panel-scroll{
+  flex:1 1 auto;
+  overflow-y:auto;
+  padding:8px 10px 12px;
+}
+
+/* RIDER BLOCK */
+.rider-block{
+  background:#fff7f0;
+  border:1px solid #f0e0d3;
+  padding:12px 12px 10px;
+  margin-top:12px;
+  border-radius:16px;
+  box-shadow:0 10px 24px rgba(0,0,0,0.06);
+  position:relative;
+  overflow:hidden;
+}
+.rider-block.rider-appear{
+  animation:riderAppear 0.28s ease-out;
+}
+.rider-block-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+}
+.rider-block-title{
+  font-size:13px;
+  font-weight:700;
+  color:#4e342e;
+}
+.rider-remove-btn{
+  background:#e57373;
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  padding:5px 10px;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(229,115,115,0.45);
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.rider-remove-btn:hover{
+  filter:brightness(1.04);
+  transform:translateY(-0.5px);
+}
+
+/* Small table in rider block */
+.small-table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:8px;
+}
+.small-table th,
+.small-table td{
+  padding:6px 6px;
+  border-bottom:1px solid #f3e9e6;
+  font-size:12px;
+}
+.small-table th{
+  text-align:center;
+  background:#fff5ec;
+  font-weight:700;
+}
+.small-table td input{
+  width:100%;
+  padding:4px 6px;
+  height:28px;
+  font-size:12px;
+  border-radius:7px;
+  border:1px solid #e4d4c8;
+  background:#fffbf6;
+}
+.small-table tfoot td{
+  font-weight:700;
+  background:#faf3ec;
+}
+
+.cut-line{
+  margin-top:8px;
+  text-align:center;
+  font-size:11px;
+  color:#7b6a5f;
+}
+
+/* LOADING */
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(23,17,13,0.16);
+  display:none;
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(3px);
+}
+.loader{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  border:6px solid #e9d7cc;
+  border-top-color:var(--brown);
+  animation:spin .85s linear infinite;
+  box-shadow:0 6px 24px rgba(0,0,0,0.26);
+}
+
+/* ANIMATIONS */
+@keyframes spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+@keyframes cardFadeSlide{
+  from{ opacity:0; transform:translateY(8px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+@keyframes riderAppear{
+  from{ opacity:0; transform:translateY(8px) scale(0.99); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .top-nav-inner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .container{
+    padding:0 10px;
+    margin:12px 10px 24px;
+  }
+  body.assign-mode .container{
+    margin:12px 10px 24px;
+  }
+  .rider-side-panel{
+    position:static;
+    width:100%;
+    max-height:none;
+    margin:0 10px 16px;
+  }
+  .combined-flex{
+    flex-direction:column;
+  }
+  .summary-wrap,
+  .rider-scroll-wrap{
+    max-width:100%;
+    flex-basis:auto;
+    border-radius:14px;
+    border:1px solid #ead7c9;
+    box-shadow:none;
+  }
+  .combined-table thead th{
+    top:0; /* di mobile, biar nempel atas container */
+  }
+}
+
+/* PRINT */
+@media print{
+  *{
+    -webkit-print-color-adjust:exact !important;
+    print-color-adjust:exact !important;
+  }
+  @page{
+    size:A4;
+    margin:12mm;
+  }
+  body{
+    background:white !important;
+    color:#111 !important;
+  }
+  .top-nav,
+  .assign-top,
+  #loadLatestStock,
+  #saveStockBtn,
+  #saveAssignBtn,
+  .nav,
+  .add-rider-btn,
+  .save-btn,
+  .rider-side-panel{
+    display:none !important;
+  }
+  .container{
+    max-width:100%;
+    margin:0;
+    padding:0;
+  }
+  .rider-print-page{
+    page-break-after:always;
+    margin-bottom:18px;
+  }
+  .rider-table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  .rider-table th,
+  .rider-table td{
+    border:1px solid #444 !important;
+    padding:6px !important;
+    font-size:11px !important;
+    text-align:center;
+  }
+  .rider-table th{
+    background:var(--print-header-bg) !important;
+    font-weight:700;
+  }
+  .total-row{
+    background:var(--print-total-bg) !important;
+    font-weight:700 !important;
+  }
+}
+
+/* Total row untuk Update Stock */
+#stockTotalRow{
+  background:#f8f2ef !important;
+  font-weight:700;
+  color:#4e342e;
+}
+#stockTotalRow td{
+  padding:8px 10px !important;
+  border-top:2px solid #e4d6cf !important;
+  border-bottom:2px solid #e4d6cf !important;
+  font-size:14px !important;
+}
+.summary-group-title,
+.riders-group-title {
+  position: sticky;
+  top: var(--sticky-header-top);
+  z-index: 300;
+  background: #f1e5d7 !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  line-height: 42px !important;
+  color: #3e2723 !important;
+  text-align: center !important;
+  border-bottom: 2px solid #d9c3b4 !important;
+}
+
+
+</style>
+
+
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingOverlay" class="loading-overlay" aria-hidden="true">
+  <div class="loader" role="status" aria-label="loading"></div>
+</div>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+  <div class="top-nav-inner">
+    <div class="brand-wrap">
+      <img src="<?= LOGO_PNG ?>"  alt="Logo">
+      <div>
+        <div class="brand-text-main">Atasnama Kopi — Express</div>
+        <div class="brand-text-sub">Admin Panel · Update Stock & Assign Rider</div>
+      </div>
+    </div>
+    <div class="nav" role="tablist">
+      <div class="nav-item active" id="tabUpdate">📦 Update Stock</div>
+      <div class="nav-item" id="tabAssign">🚴 Assign Rider</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- UPDATE STOCK -->
+  <div id="sectionUpdate" class="section-card">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Update Stock Harian</h2>
+        <div class="section-subtitle">
+          Simpan stok harian (New / Mutasi). Data ini dipakai saat assign rider pagi hari.
+        </div>
+      </div>
+      <div class="meta-pill">
+        Tanggal: <strong id="updateDateLabel"></strong>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div style="min-width:180px;flex:1">
+        <div class="label">Outlet</div>
+        <select id="outletSelect" class="select"></select>
+      </div>
+      <div style="min-width:220px;flex:1.2">
+        <div class="label">Nama Tim Produksi</div>
+        <select id="produksiSelect" class="select"></select>
+      </div>
+      <div style="min-width:160px">
+        <div class="label">Tanggal Update Stock</div>
+        <input type="date" id="tanggalStock" class="input">
+      </div>
+      <div style="min-width:160px">
+        <div class="label">Jenis Stok</div>
+        <select id="stockType" class="select">
+          <option value="new_stock">New Stock</option>
+          <option value="mutasi_stock">Mutasi Stock</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <table class="table" id="stockTable" style="width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;background:#fffdf9;border:1px solid #ead7c9">
+        <thead style="background:#f9ece1">
+          <tr id="stockHeaderRow"></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div class="btn-row">
+        <button class="save-btn" id="saveStockBtn">💾 Simpan Stock Harian</button>
+        <div class="small-note">Pastikan data sudah dicek sebelum menyimpan.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ASSIGN RIDER (LEFT BODY ONLY) -->
+  <div id="sectionAssign" class="section-card" style="display:none">
+    <div class="section-header">
+      <div>
+        <h2 class="section-title">Assign Rider</h2>
+        <div class="section-subtitle">Load stok terakhir, lalu distribusikan ke rider.</div>
+      </div>
+    </div>
+
+    <div class="assign-top" aria-hidden="false">
+      <div class="controls">
+        <div style="min-width:220px">
+          <div class="label">Outlet (Assign)</div>
+          <select id="assignOutlet" class="select"></select>
+        </div>
+
+        <div style="min-width:160px">
+          <div class="label">Tanggal Assign</div>
+          <input type="date" id="assignDate" class="input">
+        </div>
+
+        <div style="min-width:220px; display:flex; align-items:center; gap:10px;">
+          <button id="loadLatestStock" class="load-btn">🔄 Load Stok Terakhir</button>
+          <span id="riderCount" style="font-size:12px; color:#5d4037; font-weight:600;">0 Riders Selected</span>
+        </div>
+      </div>
+
+      <div class="assign-header">
+        <div class="assign-header-left">
+          <!-- kosong, summary di bawah -->
+        </div>
+        <div class="assign-header-right">
+          <button id="printAssignBtn" class="print-btn">🖨️ Print Assign Rider</button>
+          <button class="add-rider-btn" id="addRiderBtn">＋ Rider</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY LEFT (2 kolom besar: summary + rider summary) -->
+    <div class="assign-summary-shell">
+      <div id="combinedPanelContainer"></div>
+    </div>
+
+    <div id="saveAssignBottom" style="margin-top:14px;display:flex;gap:12px;align-items:center;padding-left:2px;">
+      <button class="save-btn" id="saveAssignBtn">💾 Simpan Assign Rider</button>
+      <div class="small-note">Simpan lalu cetak daftar assign (opsional).</div>
+    </div>
+  </div>
+</div>
+
+<!-- RIDER INPUT BLOCKS – PANEL KANAN FIXED -->
+<div id="riderSidePanel" class="rider-side-panel">
+  <div class="rider-side-header">
+    <strong>Rider Assign Panel</strong>
+    <span>Tambah rider & isi stok, kiri hanya untuk summary.</span>
+  </div>
+  <div class="rider-panel-scroll">
+    <div id="riderAssignContainer"></div>
+  </div>
+</div>
+
+<script>
+/* ========================= UTIL & INIT ========================= */
+function todayLocal() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const dd = String(d.getDate()).padStart(2,'0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+const $ = q => document.querySelector(q);
+const $$ = q => Array.from(document.querySelectorAll(q));
+
+let MASTER = {};
+let produkList = [];
+let latestStockSnapshot = {}; // produk -> { total_lama, total_baru, grand_total }
+const STATIC_OUTLETS = ['Ciledug','Rawamangun'];
+
+function showLoading(){ const lo = document.getElementById('loadingOverlay'); if(lo) lo.style.display='flex'; }
+function hideLoading(){ const lo = document.getElementById('loadingOverlay'); if(lo) lo.style.display='none'; }
+function swalError(title,text){ return Swal.fire({title,text,icon:'error',confirmButtonText:'Oke'}); }
+function swalSuccess(title,text){ return Swal.fire({title,text,icon:'success',confirmButtonText:'Sip'}); }
+function swalConfirm(title,text){ return Swal.fire({title,text,icon:'question',showCancelButton:true,confirmButtonText:'Iya',cancelButtonText:'Nggak'}); }
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  document.body.classList.add('page-enter','update-mode');
+  showLoading();
+  $('#tanggalStock').value = todayLocal();
+  $('#assignDate').value = todayLocal();
+  $('#updateDateLabel').textContent = todayLocal();
+  google.script.run.withSuccessHandler(initPage).getMasterData();
+});
+
+function initPage(data){
+  MASTER = data || {};
+  produkList = (MASTER.products && MASTER.products.map(p => p.product || p.name)) || [
+    'KS Express (KSE)','KH Harum Manis (HHM)','Thai Tea (THT)',
+    'Iced Chocolate (CLT)','Matcha Latte (MCL)','KS Spesial (KSS)','Salted Caramel (SCR)'
+  ];
+
+  ['#outletSelect','#stockSource','#assignOutlet'].forEach(id=>{
+    const sel = $(id); if(!sel) return;
+    sel.innerHTML = '<option value="">-- pilih --</option>';
+    STATIC_OUTLETS.forEach(o=>{
+      const op=document.createElement('option');
+      op.value=o; op.textContent=o;
+      sel.appendChild(op);
+    });
+  });
+
+  const prodSel = $('#produksiSelect');
+  if(prodSel){
+    prodSel.innerHTML = '<option value="">-- pilih tim produksi --</option>';
+    (MASTER.admins || []).forEach(a=>{
+      const op=document.createElement('option');
+      op.value=a; op.textContent=a;
+      prodSel.appendChild(op);
+    });
+  }
+
+  attachEvents();
+  renderStockTable();
+  updateCombinedSummary();
+  initExistingRiderBlocks();
+  hideLoading();
+}
+
+/* TAB */
+function showTab(tab){
+  const sectionUpdate = $('#sectionUpdate');
+  const sectionAssign = $('#sectionAssign');
+  const tabUpdate = $('#tabUpdate');
+  const tabAssign = $('#tabAssign');
+  const riderPanel = $('#riderSidePanel');
+
+  if(tab === 'update'){
+    sectionUpdate.style.display='block';
+    sectionAssign.style.display='none';
+    tabUpdate.classList.add('active');
+    tabAssign.classList.remove('active');
+    document.body.classList.add('update-mode');
+    document.body.classList.remove('assign-mode');
+    if (riderPanel) riderPanel.style.display = 'none';
+  } else {
+    sectionUpdate.style.display='none';
+    sectionAssign.style.display='block';
+    tabUpdate.classList.remove('active');
+    tabAssign.classList.add('active');
+    document.body.classList.remove('update-mode');
+    document.body.classList.add('assign-mode');
+    if (riderPanel) riderPanel.style.display = 'flex';
+  }
+}
+
+/* EVENTS */
+function attachEvents(){
+  $('#stockType').addEventListener('change', ()=>{ renderStockTable(); updateCombinedSummary(); });
+  $('#stockTable').addEventListener('input', e=> handleStockInput(e));
+  $('#saveStockBtn').addEventListener('click', () => saveStockHandler());
+
+  $('#addRiderBtn').addEventListener('click', ()=>{ addRiderBlock(true); });
+  $('#loadLatestStock').addEventListener('click', () => loadLatestStockForAssign());
+  $('#saveAssignBtn').addEventListener('click', () => saveAssignHandler());
+  $('#printAssignBtn').addEventListener('click', doPrintAssigned);
+
+  $('#tabUpdate').addEventListener('click', ()=>showTab('update'));
+  $('#tabAssign').addEventListener('click', ()=>showTab('assign'));
+
+  $('#assignOutlet').addEventListener('change', ()=> {
+    $$('.rider-select').forEach(s=> populateRiderSelect(s));
+    const out = $('#assignOutlet').value;
+    applyGerobakPrefixToBlocks(out);
+    updateCombinedSummary();
+  });
+
+  document.addEventListener('change', (e)=> {
+    if(e.target && e.target.classList && e.target.classList.contains('rider-select')){
+      updateAllRiderDropdowns();
+      updateCombinedSummary();
+      updateRiderCount();
+      checkAddRiderAvailability();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    clearTimeout(window.__syncTimer);
+    window.__syncTimer = setTimeout(syncRowHeights, 120);
+  });
+}
+
+/* ========== STOCK TABLE ========== */
+function renderStockTable(){
+  const thead = $('#stockTable thead tr#stockHeaderRow');
+  const tbody = $('#stockTable tbody');
+  thead.innerHTML=''; tbody.innerHTML='';
+  const isMut = $('#stockType').value === 'mutasi_stock';
+
+  if(!isMut){
+    thead.innerHTML = `
+      <th style="text-align:left;padding-left:10px">Produk</th>
+      <th>Stok Kulkas Depan (Outlet)</th>
+      <th>Stok Kulkas Belakang (Outlet)</th>
+      <th>Grand Total</th>
+    `;
+  } else {
+    thead.innerHTML = `
+      <th style="text-align:left;padding-left:10px">Produk</th>
+      <th>Stok Kulkas Depan (Outlet)</th>
+      <th>Stok Kulkas Belakang (Outlet)</th>
+      <th>Total Outlet</th>
+      <th>Stok Kulkas Depan (Mutasi)</th>
+      <th>Stok Kulkas Belakang (Mutasi)</th>
+      <th>Total Mutasi</th>
+      <th>Grand Total</th>
+    `;
+  }
+
+  produkList.forEach(p=>{
+    const tr = document.createElement('tr');
+    if(!isMut){
+      tr.innerHTML = `
+        <td style="text-align:left;padding-left:10px">${escapeHtml(p)}</td>
+        <td><input type="number" class="depan input" min="0" value="0"></td>
+        <td><input type="number" class="belakang input" min="0" value="0"></td>
+        <td class="grandTotal">0</td>
+      `;
+    } else {
+      tr.innerHTML = `
+        <td style="text-align:left;padding-left:10px">${escapeHtml(p)}</td>
+        <td><input type="number" class="depan input" min="0" value="0"></td>
+        <td><input type="number" class="belakang input" min="0" value="0"></td>
+        <td class="totalOutlet">0</td>
+        <td><input type="number" class="mutDepan input" min="0" value="0"></td>
+        <td><input type="number" class="mutBelakang input" min="0" value="0"></td>
+        <td class="totalMutasi">0</td>
+        <td class="grandTotal" style="font-weight:700">0</td>
+      `;
+    }
+    tbody.appendChild(tr);
+  });
+
+  const totalTR = document.createElement('tr');
+  totalTR.id = 'stockTotalRow';
+
+  if (!isMut) {
+    totalTR.innerHTML = `
+      <td><strong>TOTAL</strong></td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    `;
+  } else {
+    totalTR.innerHTML = `
+      <td><strong>TOTAL</strong></td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    `;
+  }
+
+  tbody.appendChild(totalTR);
+  updateStockTotals();
+  enableTableNavigation();
+}
+
+function handleStockInput(e){
+  const tr = e.target.closest('tr'); 
+  if(!tr) return;
+
+  const isMut = $('#stockType').value === 'mutasi_stock';
+
+  const d = Number(tr.querySelector('.depan')?.value || 0);
+  const b = Number(tr.querySelector('.belakang')?.value || 0);
+
+  if(!isMut) {
+    const gt = d + b;
+    if (tr.querySelector('.grandTotal')) 
+        tr.querySelector('.grandTotal').textContent = gt;
+
+    updateStockTotals();
+    updateCombinedSummary();
+    return;
+  }
+
+  const mutD = Number(tr.querySelector('.mutDepan')?.value || 0);
+  const mutB = Number(tr.querySelector('.mutBelakang')?.value || 0);
+
+  const totalOutlet = d + b;
+  const totalMut = mutD + mutB;
+  const total = totalOutlet + totalMut;
+
+  if (tr.querySelector('.totalOutlet')) 
+      tr.querySelector('.totalOutlet').textContent = totalOutlet;
+
+  if (tr.querySelector('.totalMutasi')) 
+      tr.querySelector('.totalMutasi').textContent = totalMut;
+
+  if (tr.querySelector('.grandTotal')) 
+      tr.querySelector('.grandTotal').textContent = total;
+
+  updateStockTotals();
+  updateCombinedSummary();
+}
+
+function collectStockTable(){
+  return $$('#stockTable tbody tr')
+    .filter(tr => tr.id !== "stockTotalRow")
+    .map(tr=>({
+      product: tr.cells[0].textContent.trim(),
+      depan: Number(tr.querySelector('.depan')?.value || 0),
+      belakang: Number(tr.querySelector('.belakang')?.value || 0),
+      totalOutlet: Number(tr.querySelector('.totalOutlet')?.textContent ||
+        (Number(tr.querySelector('.depan')?.value||0) + Number(tr.querySelector('.belakang')?.value||0))),
+      mutDepan: Number(tr.querySelector('.mutDepan')?.value || 0),
+      mutBelakang: Number(tr.querySelector('.mutBelakang')?.value || 0),
+      totalMutasi: Number(tr.querySelector('.totalMutasi')?.textContent || 0),
+      grandTotal: Number(tr.querySelector('.grandTotal')?.textContent || 0)
+    }));
+}
+
+function saveStockHandler(){
+  const outlet = $('#outletSelect').value;
+  const tgl = $('#tanggalStock').value;
+  const jenis = $('#stockType').value;
+  const source = $('#stockSource') ? $('#stockSource').value : '';
+  const admin = $('#produksiSelect').value || '';
+
+  if(!outlet || !tgl || !admin) return swalError('Form belum lengkap', 'Silakan isi Outlet, Tanggal, dan Tim Produksi sebelum menyimpan.');
+
+  const products = collectStockTable();
+  if(!products || products.length===0) return swalError('Tidak ada produk', 'Tidak ditemukan daftar produk. Cek MASTER produk Anda.');
+
+  const payload = { outlet, tgl, jenis, source, products, admin };
+
+  swalConfirm('Simpan data stok?', `Yakin ingin menyimpan stock ${jenis==='mutasi_stock' ? 'mutasi' : 'baru'} untuk outlet ${outlet} tanggal ${tgl}?`)
+    .then(res=>{
+      if(!res.isConfirmed) return;
+      showLoading(); $('#saveStockBtn').disabled=true; $('#saveStockBtn').textContent='Menyimpan...';
+      google.script.run
+        .withSuccessHandler(resp=>{
+          hideLoading(); $('#saveStockBtn').disabled=false; $('#saveStockBtn').textContent='💾 Simpan Stock Harian';
+          latestStockSnapshot={}; updateCombinedSummary();
+          swalSuccess('Tersimpan', `Stock harian berhasil disimpan (${resp.saved || resp.count || 0} baris).`);
+        })
+        .withFailureHandler(err=>{
+          hideLoading(); $('#saveStockBtn').disabled=false; $('#saveStockBtn').textContent='💾 Simpan Stock Harian';
+          swalError('Gagal menyimpan', (err && err.message) ? err.message : String(err));
+        })
+        .saveStockDaily(payload);
+    });
+}
+
+/* ---------- RIDER select helpers ---------- */
+function populateRiderSelect(sel){
+  const outlet = $('#assignOutlet').value || $('#outletSelect').value || '';
+  sel.innerHTML = "<option value=''>-- pilih rider --</option>";
+  (MASTER.ridersWithMeta || [])
+    .filter(r=> (r.status||'').toLowerCase()==='aktif' && (!outlet || r.outlet===outlet))
+    .forEach(r=>{
+      const op = document.createElement('option'); 
+      op.value=r.name; 
+      op.textContent=r.name; 
+      sel.appendChild(op);
+    });
+}
+
+function updateAllRiderDropdowns(){
+  const selected = Array.from(document.querySelectorAll('.rider-select'))
+    .map(s=>s.value)
+    .filter(Boolean);
+  document.querySelectorAll('.rider-select').forEach(sel=>{
+    const cur = sel.value;
+    Array.from(sel.options).forEach(op=>{
+      if(!op.value) return;
+      op.disabled = (op.value !== cur && selected.includes(op.value));
+    });
+  });
+}
+
+function checkAddRiderAvailability(){
+  const totalActive = (MASTER.ridersWithMeta || [])
+    .filter(r=> (r.status||'').toLowerCase()==='aktif').length;
+  const used = $$('.rider-select').length;
+  const btn = document.getElementById('addRiderBtn');
+  if(!btn) return;
+  btn.disabled = used >= totalActive;
+}
+
+function applyGerobakPrefixToBlocks(outlet){
+  const map = { 'Ciledug': 'ECL-', 'Rawamangun': 'RWM-' };
+  const prefix = map[outlet] || '';
+  $$('.rider-block').forEach(block=>{
+    const g = block.querySelector('.no-gerobak');
+    if(g && (!g.value || g.value.trim().length===0 || g.value.trim().indexOf('-')===-1)){
+      g.value = prefix;
+    }
+    const outletDisplay = block.querySelector('.outlet-display');
+    if(outletDisplay) outletDisplay.textContent = outlet || '';
+  });
+}
+
+/* rider calc */
+function calcRiderBlock(block){
+  let lama=0, baru=0;
+  block.querySelectorAll('tbody tr').forEach(tr=>{
+    if(!tr.querySelector('.assign-lama')) return;
+    const l = Number(tr.querySelector('.assign-lama').value || 0);
+    const b = Number(tr.querySelector('.assign-baru').value || 0);
+    const tot = l+b;
+    if(tr.querySelector('.assign-total')) tr.querySelector('.assign-total').textContent = tot;
+    lama += l; baru += b;
+  });
+  block.querySelector('.ttl-lama').textContent = lama;
+  block.querySelector('.ttl-baru').textContent = baru;
+  block.querySelector('.ttl-all').textContent = lama+baru;
+}
+
+/* collect assign payload (for save) */
+function collectAssignPayload(){
+  const blocks = $$('.rider-block'); const out=[];
+  blocks.forEach(block=>{
+    const rider = block.querySelector('.rider-select').value; 
+    const date = block.querySelector('.rider-date').value;
+    if(!rider) return;
+    block.querySelectorAll('tbody tr').forEach(tr=>{
+      if(!tr.querySelector('.assign-lama')) return;
+      const prod = tr.children[0].textContent.trim();
+      const lama = Number(tr.querySelector('.assign-lama').value || 0);
+      const baru = Number(tr.querySelector('.assign-baru').value || 0);
+      const total = lama + baru;
+      if(total>0) out.push({ 
+        date, 
+        outlet: $('#assignOutlet').value || $('#outletSelect').value, 
+        rider, 
+        product: prod, 
+        stok_lama: lama, 
+        stok_baru: baru, 
+        total,
+        no_gerobak: block.querySelector('.no-gerobak')?.value || '' 
+      });
+    });
+  });
+  return out;
+}
+
+/* compute stock fallback from update table (legacy) */
+function computeStockFromTable(){
+  const s={};
+  $$('#stockTable tbody tr').forEach(tr=>{
+    const p = tr.children[0].textContent.trim();
+    const gt = Number(tr.querySelector('.grandTotal')?.textContent || 0);
+    if(p) s[p] = gt;
+  });
+  return s;
+}
+
+function updateCombinedSummary() {
+  const container = document.getElementById("combinedPanelContainer");
+  container.innerHTML = "";
+
+  // 1. Source data (stock)
+  const source = Object.keys(latestStockSnapshot).length > 0
+    ? latestStockSnapshot
+    : (() => {
+        const t = computeStockFromTable();
+        const o = {};
+        Object.keys(t).forEach(k => {
+          o[k] = { total_lama: 0, total_baru: 0, grand_total: t[k] };
+        });
+        return o;
+      })();
+
+  // 2. Riders
+  const blocks = document.querySelectorAll(".rider-block");
+  let riders = Array.from(blocks).map((b, i) => b.querySelector(".rider-select").value || `Rider ${i+1}`);
+  if (!riders || riders.length === 0) riders = ['']; // placeholder col
+
+  const assignLama = {};
+  const assignBaru = {};
+  const assignPerRider = {};
+
+  blocks.forEach((b, idx) => {
+    const rider = b.querySelector(".rider-select").value || `Rider ${idx+1}`;
+    assignPerRider[rider] = assignPerRider[rider] || {};
+
+    b.querySelectorAll("tbody tr").forEach(tr => {
+      if (!tr.querySelector(".assign-lama")) return;
+      const prod = tr.children[0].textContent.trim();
+      const l = Number(tr.querySelector(".assign-lama").value || 0);
+      const br = Number(tr.querySelector(".assign-baru").value || 0);
+
+      assignLama[prod] = (assignLama[prod] || 0) + l;
+      assignBaru[prod] = (assignBaru[prod] || 0) + br;
+      assignPerRider[rider][prod] = (assignPerRider[rider][prod] || 0) + (l+br);
+    });
+  });
+
+  const prods = produkList && produkList.length ? produkList : Object.keys(source).sort();
+
+  // === Unified single-row header (LEFT + RIGHT) ===
+  const headerRow = `
+    <tr>
+      <th>Produk</th>
+      <th>Total Lama</th>
+      <th>Total Baru</th>
+      <th>Total</th>
+      <th>Sisa Lama</th>
+      <th>Sisa Baru</th>
+      <th>Sisa Total</th>
+      <th>Assign Total</th>
+      ${riders.map(r => `<th>${r.trim() || '&nbsp;'}</th>`).join('')}
+    </tr>
+  `;
+
+  // === SINGLE TABLE Layout: duplicated structure for left & right ===
+  const table = document.createElement("table");
+  table.className = "combined-table full-table";
+  table.innerHTML = `
+    <thead>${headerRow}</thead>
+    <tbody></tbody>
+  `;
+
+  // Body rows
+  prods.forEach((prod, idx) => {
+    const src = source[prod] || { total_lama:0, total_baru:0, grand_total:0 };
+    const tL=src.total_lama, tB=src.total_baru, tot=src.grand_total;
+    const aL=assignLama[prod] || 0, aB=assignBaru[prod] || 0, aT=aL+aB;
+    const rL=tL-aL, rB=tB-aB, rT=tot-aT;
+
+    let riderCells = "";
+    riders.forEach(r=>{
+      const v = assignPerRider[r]?.[prod] || 0;
+      riderCells += `<td style="text-align:center">${v}</td>`;
+    });
+
+    table.querySelector("tbody").innerHTML += `
+      <tr data-row-id="${idx}">
+        <td style="text-align:left">${escapeHtml(prod)}</td>
+        <td>${tL}</td>
+        <td>${tB}</td>
+        <td>${tot}</td>
+        <td style="color:${rL<0?'red':'inherit'}">${rL}</td>
+        <td style="color:${rB<0?'red':'inherit'}">${rB}</td>
+        <td style="font-weight:bold">${rT}</td>
+        <td style="color:blue">${aT}</td>
+        ${riderCells}
+      </tr>
+    `;
+  });
+
+  // Footer total row
+  let footerRiders = "";
+  riders.forEach(r=>{
+    footerRiders += `<td><strong>${prods.reduce((a,p)=> a + (assignPerRider[r]?.[p] || 0), 0)}</strong></td>`;
+  });
+
+  table.querySelector("tbody").innerHTML += `
+    <tr class="footer-total">
+      <td><strong>Total</strong></td>
+      <td>${Object.values(source).reduce((a,b)=>a+(b.total_lama||0),0)}</td>
+      <td>${Object.values(source).reduce((a,b)=>a+(b.total_baru||0),0)}</td>
+      <td>${Object.values(source).reduce((a,b)=>a+(b.grand_total||0),0)}</td>
+      <td colspan="4"></td>
+      ${footerRiders}
+    </tr>
+  `;
+
+  container.appendChild(table);
+
+  applyRemainingRules();
+  requestAnimationFrame(()=> setTimeout(syncRowHeights, 80));
+}
+
+
+
+// --- FUNGSI SYNC HEIGHTS (Pastikan lw punya fungsi ini) ---
+function syncRowHeights() {
+  const leftRows = document.querySelectorAll(".left-table tr");
+  const rightRows = document.querySelectorAll(".right-table tr");
+
+  const len = Math.min(leftRows.length, rightRows.length);
+
+  for (let i = 0; i < len; i++) {
+    const lRow = leftRows[i];
+    const rRow = rightRows[i];
+
+    lRow.style.height = 'auto';
+    rRow.style.height = 'auto';
+
+    const maxHeight = Math.max(lRow.offsetHeight, rRow.offsetHeight);
+
+    lRow.style.height = maxHeight + "px";
+    rRow.style.height = maxHeight + "px";
+  }
+}
+
+
+/* cell helper */
+function makeCell(val, warn){
+  const td=document.createElement('td'); 
+  td.textContent = val;
+  if(warn) td.style.color='red';
+  return td;
+}
+
+/* disable input jika remaining 0 */
+function applyRemainingRules(){
+  // build remaining map from left summary table
+  const remainingMap = {};
+  const leftRows = document.querySelectorAll('.summary-wrap table tbody tr');
+  leftRows.forEach(row=>{
+    if(row.classList.contains('footer-total')) return;
+    const prod = row.children[0]?.textContent.trim();
+    if(!prod) return;
+    const remL = Number(row.querySelector('.rem-lama')?.textContent || 0);
+    const remB = Number(row.querySelector('.rem-baru')?.textContent || 0);
+    remainingMap[prod] = { lama: remL, baru: remB };
+  });
+
+  $$('.rider-block').forEach(block=>{
+    block.querySelectorAll('tbody tr').forEach(tr=>{
+      const prod = tr.children[0]?.textContent.trim();
+      if(!prod) return;
+      const rem = remainingMap[prod] || {lama:Infinity, baru:Infinity};
+      const inpL = tr.querySelector('.assign-lama');
+      const inpB = tr.querySelector('.assign-baru');
+      if(inpL) inpL.disabled = rem.lama <= 0;
+      if(inpB) inpB.disabled = rem.baru <= 0;
+    });
+  });
+}
+
+/* Add hover listeners to left & right tables to highlight matching product rows */
+function addRowHoverListeners(leftWrap, rightWrap){
+  const leftRows = leftWrap.querySelectorAll('tbody tr');
+  const rightRows = rightWrap.querySelectorAll('tbody tr');
+
+  // helper to find rows by product name (first cell)
+  function rowsForProduct(prod){
+    const matches = [];
+    leftRows.forEach(r=>{ if(r.children[0] && r.children[0].textContent.trim()===prod) matches.push(r); });
+    rightRows.forEach(r=>{ if(r.children[0] && r.children[0].textContent.trim()===prod) matches.push(r); });
+    return matches;
+  }
+
+  leftRows.forEach(r=>{
+    r.addEventListener('mouseenter', ()=>{
+      const prod = r.children[0]?.textContent.trim(); if(!prod) return;
+      rowsForProduct(prod).forEach(x=>x.classList.add('row-hover'));
+    });
+    r.addEventListener('mouseleave', ()=>{
+      const prod = r.children[0]?.textContent.trim(); if(!prod) return;
+      rowsForProduct(prod).forEach(x=>x.classList.remove('row-hover'));
+    });
+  });
+
+  rightRows.forEach(r=>{
+    r.addEventListener('mouseenter', ()=>{
+      const idx = r.getAttribute('data-row-id');
+      // highlight same index on left
+      if(idx!==null){
+        const left = leftWrap.querySelectorAll('tbody tr')[Number(idx)];
+        if(left) { left.classList.add('row-hover'); r.classList.add('row-hover'); }
+      }
+    });
+    r.addEventListener('mouseleave', ()=>{
+      const idx = r.getAttribute('data-row-id');
+      if(idx!==null){
+        const left = leftWrap.querySelectorAll('tbody tr')[Number(idx)];
+        if(left) { left.classList.remove('row-hover'); r.classList.remove('row-hover'); }
+      }
+    });
+  });
+}
+
+/* ADD RIDER block (masuk ke panel kanan) */
+function addRiderBlock(focusTop){
+  const prefix = (() => {
+    const out = $('#assignOutlet')?.value || $('#outletSelect')?.value || '';
+    if(out === 'Ciledug') return 'ECL-';
+    if(out === 'Rawamangun') return 'RWM-';
+    return '';
+  })();
+
+  const div = document.createElement('div'); 
+  div.className='rider-block rider-appear';
+
+  div.innerHTML = `
+    <div class="rider-block-header">
+      <div class="rider-block-title">Rider</div>
+      <button class='rider-remove-btn remove-rider'>✕ Hapus</button>
+    </div>
+
+    <div style='margin-top:8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap'>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class='rider-select input'><option value=''>-- pilih rider --</option></select>
+        <input type='date' class='rider-date input' value='${todayLocal()}'>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+        <div style="font-size:12px;color:#6d4c41">Outlet:</div>
+        <div class="outlet-display" style="font-weight:700;margin-right:8px;font-size:12px"></div>
+        <div style="font-size:12px;color:#6d4c41">No. Gerobak:</div>
+        <input class="no-gerobak input" style="width:140px" value="${prefix}">
+      </div>
+    </div>
+
+    <div style='margin-top:8px;'>
+      <table class='small-table'>
+        <thead>
+          <tr>
+            <th style='text-align:left;padding-left:8px'>Produk</th>
+            <th style='text-align:center'>Stok Lama</th>
+            <th style='text-align:center'>Stok Baru</th>
+            <th style='text-align:center'>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${produkList.map(p=>`<tr>
+            <td style='text-align:left;padding-left:8px'>${escapeHtml(p)}</td>
+            <td style='text-align:center'><input type='number' class='assign-lama input' value="0" min="0"></td>
+            <td style='text-align:center'><input type='number' class='assign-baru input' value="0" min="0"></td>
+            <td style='text-align:center' class='assign-total'>0</td>
+          </tr>`).join('')}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total</td>
+            <td class='ttl-lama' style='text-align:center'>0</td>
+            <td class='ttl-baru' style='text-align:center'>0</td>
+            <td class='ttl-all' style='text-align:center'>0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="cut-line"><span>——————— gunting di sini ———————</span></div>
+  `;
+
+  const container = $('#riderAssignContainer');
+  container.insertBefore(div, container.firstChild);
+
+  populateRiderSelect(div.querySelector('.rider-select'));
+  const outlet = $('#assignOutlet').value || $('#outletSelect').value || '';
+  div.querySelector('.outlet-display').textContent = outlet || '';
+  if(prefix && (!div.querySelector('.no-gerobak').value || div.querySelector('.no-gerobak').value.trim().length===0)) {
+    div.querySelector('.no-gerobak').value = prefix;
+  }
+
+  setTimeout(()=>{ div.classList.remove('rider-appear'); }, 350);
+
+  div.querySelector('.rider-select').addEventListener('change', ()=>{
+    updateAllRiderDropdowns();
+    updateRiderCount();
+  });
+  div.addEventListener('input', ()=>{ 
+    calcRiderBlock(div); 
+    updateCombinedSummary(); 
+    enableRiderNavigation(); 
+  });
+  div.querySelector('.remove-rider').addEventListener('click', ()=>{ 
+    div.remove(); 
+    updateCombinedSummary(); 
+    updateRiderCount(); 
+    updateAllRiderDropdowns(); 
+  });
+
+  if(focusTop){
+    setTimeout(()=>{ const sel = div.querySelector('.rider-select'); if(sel) sel.focus(); },40);
+  }
+
+  updateCombinedSummary();
+  updateRiderCount();
+  updateAllRiderDropdowns();
+  checkAddRiderAvailability();
+}
+
+/* KEYBOARD NAV for stock inputs */
+function enableTableNavigation(){
+  const inputs = $$('#stockTable input');
+  inputs.forEach(inp=>{
+    if(inp._navHandler) inp.removeEventListener('keydown', inp._navHandler);
+    const handler = function(e){
+      const td = this.closest('td'); const tr = this.closest('tr'); if(!td || !tr) return;
+      const cols = Array.from(tr.children); const rows = Array.from(tr.parentNode.children);
+      const colIndex = cols.indexOf(td); const rowIndex = rows.indexOf(tr);
+      const moveTo = (r,c) => {
+        if(r < 0 || c < 0) return;
+        const targetRow = rows[r]; if(!targetRow) return;
+        const targetTd = targetRow.children[c]; if(!targetTd) return;
+        const targetInput = targetTd.querySelector('input');
+        if(targetInput){ targetInput.focus(); targetInput.select(); }
+      };
+      if(e.key === 'ArrowRight'){ e.preventDefault(); moveTo(rowIndex, colIndex+1); }
+      else if(e.key === 'ArrowLeft'){ e.preventDefault(); moveTo(rowIndex, colIndex-1); }
+      else if(e.key === 'ArrowDown'){ e.preventDefault(); moveTo(rowIndex+1, colIndex); }
+      else if(e.key === 'ArrowUp'){ e.preventDefault(); moveTo(rowIndex-1, colIndex); }
+      else if(e.key === 'Enter'){ e.preventDefault(); moveTo(rowIndex+1, colIndex); }
+    };
+    inp._navHandler = handler; inp.addEventListener('keydown', handler);
+  });
+}
+
+/* navigation inside rider table */
+function enableRiderNavigation(){
+  $$('.rider-block input').forEach(inp => {
+    if(inp._rnav) inp.removeEventListener('keydown', inp._rnav);
+    const handler = function(e) {
+      const td = this.closest('td');
+      const tr = this.closest('tr');
+      if (!td || !tr) return;
+      const tds = Array.from(tr.children);
+      const trs = Array.from(tr.parentNode.children);
+      const col = tds.indexOf(td);
+      const row = trs.indexOf(tr);
+      const move = (r, c) => {
+        const targetRow = trs[r];
+        if (!targetRow) return;
+        const targetTd = targetRow.children[c];
+        if (!targetTd) return;
+        const tInput = targetTd.querySelector('input');
+        if (tInput) { tInput.focus(); tInput.select(); }
+      };
+      if (e.key === 'ArrowRight') { e.preventDefault(); move(row, col + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); move(row, col - 1); }
+      if (e.key === 'ArrowDown')  { e.preventDefault(); move(row + 1, col); }
+      if (e.key === 'ArrowUp')    { e.preventDefault(); move(row - 1, col); }
+      if (e.key === 'Enter')      { e.preventDefault(); move(row + 1, col); }
+    };
+    inp._rnav = handler; inp.addEventListener('keydown', handler);
+  });
+}
+
+/* PRINT helpers (5 riders per page) */
+function doPrintAssigned(){
+  const blocks = $$('.rider-block');
+  if(blocks.length === 0) return swalError('Tidak ada data', 'Tidak ada rider untuk dicetak.');
+  const assignDate = $('#assignDate').value || '';
+  const outlet = $('#assignOutlet').value || $('#outletSelect').value || '';
+  const perPage = 5;
+  const pages = [];
+  for(let i=0;i<blocks.length;i+=perPage) pages.push(Array.from(blocks).slice(i, i+perPage));
+
+  const logo = '/mnt/data/Screenshot 2025-11-23 at 22.51.36.png';
+
+  let html = `
+    <!doctype html><html><head><meta charset="utf-8"><title>Atasnama Kopi - Express</title>
+    <style>
+      body{font-family:Arial,Helvetica,sans-serif;color:#222;padding:12px}
+      .header{display:flex;align-items:center;gap:12px;margin-bottom:6px}
+      .header img{width:44px;height:44px;border-radius:6px}
+      .title{font-weight:800;font-size:16px}
+      .date{font-size:12px;color:#666}
+      table{width:100%;border-collapse:collapse;margin-bottom:12px}
+      th,td{border:1px solid #444;padding:6px;text-align:left;font-size:12px}
+      th{background:#f3e3d9;font-weight:700;text-align:center}
+      .total-row{background:#e8d5ca;font-weight:700}
+      .cut{display:flex;align-items:center;gap:8px;margin:12px 0}
+      .cut hr{flex:1;border:0;border-top:1px solid #666}
+      .cut span{background:white;padding:0 10px;color:#666}
+      @page{size:A4;margin:16mm}
+      .meta-row{font-size:13px;margin-bottom:8px}
+      .meta-row strong{margin-right:6px}
+    </style>
+    </head><body>
+  `;
+
+  pages.forEach((pageBlocks,pageIdx)=>{
+    pageBlocks.forEach(block=>{
+      const riderName = block.querySelector('.rider-select')?.value || 'Rider';
+      const locationLine = '____________________';
+      const gerobak = block.querySelector('.no-gerobak')?.value || '';
+      html += `<div class="rider-print-page">`;
+      html += `<div class="header"><img src="<?= LOGO_PNG ?>" alt="logo"><div><div class="title">Atasnama Kopi - Express</div><div class="date">Date: ${escapeHtml(assignDate)}</div></div></div>`;
+      html += `<div class="meta-row"><strong>Rider:</strong> ${escapeHtml(riderName)} &nbsp;&nbsp; <strong>Location:</strong> ${locationLine} &nbsp;&nbsp; <strong>Outlet:</strong> ${escapeHtml(outlet)} &nbsp;&nbsp; <strong>No. Gerobak:</strong> ${escapeHtml(gerobak || '________________')}</div>`;
+
+      html += `<table class="rider-table"><thead><tr><th style="width:36%">Produk</th><th style="width:9%;text-align:center">Stok Lama</th><th style="width:9%;text-align:center">Stok Baru</th><th style="width:9%;text-align:center">Total</th><th style="width:9%;text-align:center">Refill 1</th><th style="width:9%;text-align:center">Refill 2</th><th style="width:9%;text-align:center">Refill 3</th><th style="width:9%;text-align:center">Refill 4</th></tr></thead><tbody>`;
+
+      const trs = block.querySelectorAll('tbody tr');
+      trs.forEach(tr=>{
+        if(!tr.querySelector('.assign-lama')) return;
+        const prod = tr.children[0].textContent.trim();
+        const lama = tr.querySelector('.assign-lama').value || '0';
+        const baru = tr.querySelector('.assign-baru').value || '0';
+        const total = (Number(lama) || 0) + (Number(baru) || 0);
+        html += `<tr><td>${escapeHtml(prod)}</td><td style="text-align:center">${escapeHtml(lama)}</td><td style="text-align:center">${escapeHtml(baru)}</td><td style="text-align:center">${escapeHtml(String(total))}</td><td></td><td></td><td></td><td></td></tr>`;
+      });
+
+      const ttlL = block.querySelector('.ttl-lama')?.textContent || '0';
+      const ttlB = block.querySelector('.ttl-baru')?.textContent || '0';
+      const ttlA = block.querySelector('.ttl-all')?.textContent || '0';
+      html += `<tr class="total-row"><td style="text-align:left">Total</td><td style="text-align:center">${escapeHtml(ttlL)}</td><td style="text-align:center">${escapeHtml(ttlB)}</td><td style="text-align:center">${escapeHtml(ttlA)}</td><td></td><td></td><td></td><td></td></tr>`;
+
+      html += `</tbody></table>`;
+      html += `<div class="cut"><hr><span>Gunting di sini</span><hr></div>`;
+      html += `</div>`;
+    });
+    if(pageIdx < pages.length-1) html += '<div style="page-break-after:always"></div>';
+  });
+
+  html += `</body></html>`;
+
+  const w = window.open('','_blank','width=900,height=700');
+  w.document.open(); w.document.write(html); w.document.close();
+  setTimeout(()=>{ try{ w.print(); } catch(e){} }, 600);
+}
+
+/* UTIL */
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateRiderCount() {
+  const count = document.querySelectorAll('.rider-block').length;
+  const label = document.getElementById('riderCount');
+  if (!label) return;
+  label.textContent = `${count} Rider${count > 1 ? 's' : ''} Selected`;
+}
+
+/* init existing (if any) */
+function initExistingRiderBlocks(){
+  $$('.rider-block').forEach(block=>{
+    populateRiderSelect(block.querySelector('.rider-select'));
+    block.querySelector('.rider-select')?.addEventListener('change', ()=>{ updateAllRiderDropdowns(); updateRiderCount();});
+    block.addEventListener('input', ()=>{ calcRiderBlock(block); updateCombinedSummary(); });
+    block.querySelector('.remove-rider')?.addEventListener('click', ()=>{ block.remove(); updateCombinedSummary(); updateRiderCount(); updateAllRiderDropdowns(); });
+  });
+  updateAllRiderDropdowns(); 
+  checkAddRiderAvailability(); 
+  enableRiderNavigation();
+}
+
+/* TOTALS bar di update stock */
+function updateStockTotals() {
+  const rows = document.querySelectorAll("#stockTable tbody tr");
+  const isMut = $('#stockType').value === 'mutasi_stock';
+
+  let sumDepan = 0;
+  let sumBelakang = 0;
+  let sumTotalOutlet = 0;
+  let sumMutDepan = 0;
+  let sumMutBelakang = 0;
+  let sumTotalMutasi = 0;
+  let sumGrand = 0;
+
+  rows.forEach(tr => {
+    if (tr.id === "stockTotalRow") return;
+
+    const d = Number(tr.querySelector(".depan")?.value || 0);
+    const b = Number(tr.querySelector(".belakang")?.value || 0);
+    const totalOutlet = Number(tr.querySelector(".totalOutlet")?.textContent || 0);
+
+    const md = Number(tr.querySelector(".mutDepan")?.value || 0);
+    const mb = Number(tr.querySelector(".mutBelakang")?.value || 0);
+    const totalMut = Number(tr.querySelector(".totalMutasi")?.textContent || 0);
+
+    const grand = Number(tr.querySelector(".grandTotal")?.textContent || 0);
+
+    sumDepan += d;
+    sumBelakang += b;
+    sumTotalOutlet += totalOutlet;
+
+    if (isMut) {
+      sumMutDepan += md;
+      sumMutBelakang += mb;
+      sumTotalMutasi += totalMut;
+    }
+
+    sumGrand += grand;
+  });
+
+  const totalRow = document.getElementById("stockTotalRow");
+  if (!totalRow) return;
+
+  const tds = totalRow.querySelectorAll("td");
+
+  if (!isMut) {
+    tds[1].textContent = sumDepan;
+    tds[2].textContent = sumBelakang;
+    tds[3].textContent = sumGrand;
+  } else {
+    tds[1].textContent = sumDepan;
+    tds[2].textContent = sumBelakang;
+    tds[3].textContent = sumTotalOutlet;
+    tds[4].textContent = sumMutDepan;
+    tds[5].textContent = sumMutBelakang;
+    tds[6].textContent = sumTotalMutasi;
+    tds[7].textContent = sumGrand;
+  }
+}
+
+/* LOAD latest stock untuk assign */
+function loadLatestStockForAssign() {
+  const outlet = $('#assignOutlet').value;
+  const date = $('#assignDate').value;
+
+  if (!outlet || !date) {
+    swalError('Form belum lengkap','Silakan pilih Outlet dan Tanggal Assign.');
+    return;
+  }
+
+  showLoading();
+
+  google.script.run
+    .withSuccessHandler(rows => {
+      hideLoading();
+
+      if (!rows || rows.length === 0) {
+        swalError('Tidak ada data stok', 'Tidak ditemukan stok terakhir untuk outlet dan tanggal tersebut.');
+        return;
+      }
+
+      const snapshot = {};
+      rows.forEach(r => {
+        snapshot[r.produk] = {
+          total_lama  : r.total_lama,
+          total_baru  : r.total_baru,
+          grand_total : r.grand_total
+        };
+      });
+
+      latestStockSnapshot = snapshot;
+      updateCombinedSummary();
+
+      swalSuccess('Berhasil', 'Stok terakhir berhasil dimuat.');
+    })
+    .withFailureHandler(err => {
+      hideLoading();
+      swalError('Gagal memuat stok', err?.message || String(err));
+    })
+    .getLatestStockForOutlet(outlet, date);
+}
+
+/* SAVE assign */
+function saveAssignHandler(){
+  const outlet = $('#assignOutlet').value;
+  const date = $('#assignDate').value;
+
+  if(!outlet || !date){
+    swalError("Form belum lengkap", "Silakan pilih Outlet dan Tanggal Assign.");
+    return;
+  }
+
+  const payload = collectAssignPayload();
+  if(payload.length === 0){
+    swalError("Tidak ada data", "Tidak ada data assign untuk disimpan.");
+    return;
+  }
+
+  swalConfirm("Simpan Assign Rider?", "Data assign akan disimpan ke Google Sheet.")
+    .then(res=>{
+      if(!res.isConfirmed) return;
+
+      showLoading();
+      $('#saveAssignBtn').disabled = true;
+      $('#saveAssignBtn').textContent = "Menyimpan...";
+
+      google.script.run
+        .withSuccessHandler(resp=>{
+          hideLoading();
+          $('#saveAssignBtn').disabled=false;
+          $('#saveAssignBtn').textContent="💾 Simpan Assign Rider";
+
+          swalSuccess("Tersimpan", `Assign Rider berhasil disimpan (${resp.count} baris).`);
+        })
+        .withFailureHandler(err=>{
+          hideLoading();
+          $('#saveAssignBtn').disabled=false;
+          $('#saveAssignBtn').textContent="💾 Simpan Assign Rider";
+
+          swalError("Gagal menyimpan", err?.message || String(err));
+        })
+        .saveAssignRider(payload);
+    });
+}
+
+// highlight summary + rider summary row pada product focus & hover
+document.addEventListener('focusin', e=> {
+  if (!e.target.classList.contains('assign-lama') &&
+      !e.target.classList.contains('assign-baru')) return;
+
+  const prod = e.target.closest('tr')?.children[0]?.textContent.trim();
+  if (!prod) return;
+
+  document.querySelectorAll('.row-hover').forEach(r=>r.classList.remove('row-hover'));
+
+  // highlight rows (both sides) that match product text
+  const leftRows = document.querySelectorAll('.summary-wrap table tbody tr');
+  leftRows.forEach(r=>{ if(r.children[0] && r.children[0].textContent.trim()===prod) r.classList.add('row-hover'); });
+  const rightRows = document.querySelectorAll('.rider-scroll-wrap table tbody tr');
+  rightRows.forEach(r=>{
+    const idx = r.getAttribute('data-row-id');
+    const left = document.querySelectorAll('.summary-wrap table tbody tr')[Number(idx)];
+    if(left && left.children[0] && left.children[0].textContent.trim()===prod) { r.classList.add('row-hover'); }
+  });
+});
+
+document.addEventListener('focusout', e => {
+  const t = e.target;
+  if (!t.classList) return;
+  if (!t.classList.contains('assign-lama') && !t.classList.contains('assign-baru')) return;
+
+  document.querySelectorAll('.row-hover').forEach(r => r.classList.remove('row-hover'));
+});
+
+// Also clear highlights on blur from inputs
+document.addEventListener('focusout',e=>{
+  const t=e.target;
+  if(!t.classList)return;
+  if(!t.classList.contains('assign-lama')&&!t.classList.contains('assign-baru'))return;
+  document.querySelectorAll('.row-hover').forEach(r=>r.classList.remove('row-hover'));
+});
+</script>
+
+</body>
+</html>
