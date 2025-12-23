@@ -310,21 +310,24 @@
     }
 
     /* FITUR BY ROLE */
-    function updateFeatureList(){
-      const role = document.getElementById("role").value;
-      const f = document.getElementById("feature");
-      f.innerHTML = "";
+function updateFeatureList(){
+  const role = document.getElementById("role").value;
+  const f = document.getElementById("feature");
+  f.innerHTML = "";
 
-      if(role === "rider"){
-        f.innerHTML += `<option value="refill">Form Refill Product</option>`;
-      }
-      if(role === "admin"){
-        f.innerHTML += `<option value="rider">Form Rider (Sales Harian)</option>`;
-        f.innerHTML += `<option value="refill">Form Refill Product</option>`;
-        f.innerHTML += `<option value="analytics">Admin Dashboard (Coming Soon)</option>`;
-      }
-    }
-    updateFeatureList();
+  if(role === "rider"){
+    f.innerHTML += `<option value="refill">Form Refill Product</option>`;
+  }
+
+  if(role === "admin"){
+    f.innerHTML += `<option value="rider">Form Rider (Sales Harian)</option>`;
+    f.innerHTML += `<option value="refill">Form Refill Product</option>`;
+    f.innerHTML += `<option value="stock_admin">Form Update Stock</option>`;
+    f.innerHTML += `<option value="analytics">Admin Dashboard (Coming Soon)</option>`;
+  }
+}
+updateFeatureList();
+
 
     /* THEME */
     const body = document.body;
@@ -354,7 +357,7 @@
       ];
 
       const adminLines = [
-        `📊 Selamat bekerja ${fullname}, data menunggu sentuhanmu.`,
+        `📊 Selamat bekerja ${fullname}.`,
         `🧁 ${fullname}, kamu bikin operasional makin rapi.`,
         `☕ ${fullname}, energi admin kuat banget hari ini.`,
         `🛠️ ${fullname}, mari kita rapihin hari ini satu-satu.`,
