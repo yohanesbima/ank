@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Analytics Kopi Keliling</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+  <div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-6 text-center">☕ Dashboard Analytics Kopi Keliling</h1>
+
+    <!-- Filter -->
+    <div class="flex flex-wrap justify-center gap-4 mb-6">
+      <div>
+        <label class="block text-sm font-semibold mb-1">Tanggal:</label>
+        <input type="date" id="filterDate" class="border rounded px-3 py-2">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold mb-1">Nama Rider:</label>
+        <select id="filterRider" class="border rounded px-3 py-2">
+          <option value="">Semua Rider</option>
+        </select>
+      </div>
+      <button onclick="applyFilter()" class="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700">Terapkan</button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+      <div class="bg-white p-4 rounded-lg shadow text-center">
+        <p class="text-sm text-gray-500">Total Revenue</p>
+        <p id="totalRevenue" class="text-lg font-bold">Rp 0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow text-center">
+        <p class="text-sm text-gray-500">Total QR</p>
+        <p id="totalQR" class="text-lg font-bold">Rp 0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow text-center">
+        <p class="text-sm text-gray-500">Total Cash</p>
+        <p id="totalCash" class="text-lg font-bold">Rp 0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow text-center">
+        <p class="text-sm text-gray-500">Produk Terjual</p>
+        <p id="totalSold" class="text-lg font-bold">0</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow text-center">
+        <p class="text-sm text-gray-500">Rider Aktif</p>
+        <p id="activeRiders" class="text-lg font-bold">0</p>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="bg-white p-6 rounded-lg shadow mb-8">
+      <canvas id="chartRider"></canvas>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white p-4 rounded-lg shadow overflow-x-auto">
+      <table class="min-w-full text-sm text-left">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="px-4 py-2">Tanggal</th>
+            <th class="px-4 py-2">Nama Rider</th>
+            <th class="px-4 py-2">No Gerobak</th>
+            <th class="px-4 py-2">Produk Terjual</th>
+            <th class="px-4 py-2">Revenue</th>
+            <th class="px-4 py-2">QR</th>
+            <th class="px-4 py-2">Cash</th>
+            <th class="px-4 py-2">Admin</th>
+            <th class="px-4 py-2">Waktu</th>
+          </tr>
+        </thead>
+        <tbody id="riderTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbXXXXX/exec"; // Ganti dengan URL web app-mu
+
+    function formatRupiah(num) {
+      if (!num || isNaN(num)) return "Rp 0";
+      return "Rp " + Number(num).toLocaleString("id-ID");
+    }
+
+    let allData = [];
+
+    async function loadData() {
+      const res = await fetch(API_URL + "?action=getSalesData");
+      allData = await res.json();
+      renderDashboard(allData);
+      populateRiderDropdown();
+    }
+
+    function populateRiderDropdown() {
+      const riders = [...new Set(allData.map(d => d["Nama Rider"]))];
+      const select = document.getElementById("filterRider");
+      riders.forEach(r => {
+        const opt = document.createElement("option");
+        opt.value = r;
+        opt.textContent = r;
+        select.appendChild(opt);
+      });
+    }
+
+    function applyFilter() {
+      const selectedDate = document.getElementById("filterDate").value;
+      const selectedRider = document.getElementById("filterRider").value;
+
+      const filtered = allData.filter(row => {
+        const matchDate = selectedDate ? row.Tanggal?.startsWith(selectedDate) : true;
+        const matchRider = selectedRider ? row["Nama Rider"] === selectedRider : true;
+        return matchDate && matchRider;
+      });
+
+      renderDashboard(filtered);
+    }
+
+    function renderDashboard(data) {
+      const totalRevenue = data.reduce((a, b) => a + Number(b.Revenue || 0), 0);
+      const totalQR = data.reduce((a, b) => a + Number(b.QR || 0), 0);
+      const totalCash = data.reduce((a, b) => a + Number(b.Cash || 0), 0);
+      const totalSold = data.reduce((a, b) => a + Number(b["Produk Terjual"] || 0), 0);
+      const activeRiders = new Set(data.map(d => d["Nama Rider"])).size;
+
+      document.getElementById("totalRevenue").textContent = formatRupiah(totalRevenue);
+      document.getElementById("totalQR").textContent = formatRupiah(totalQR);
+      document.getElementById("totalCash").textContent = formatRupiah(totalCash);
+      document.getElementById("totalSold").textContent = totalSold;
+      document.getElementById("activeRiders").textContent = activeRiders;
+
+      const tbody = document.getElementById("riderTableBody");
+      tbody.innerHTML = "";
+      data.forEach(row => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2">${row.Tanggal || '-'}</td>
+            <td class="px-4 py-2 font-medium">${row["Nama Rider"] || '-'}</td>
+            <td class="px-4 py-2">${row["No Gerobak"] || '-'}</td>
+            <td class="px-4 py-2">${row["Produk Terjual"] || 0}</td>
+            <td class="px-4 py-2">${formatRupiah(row.Revenue || 0)}</td>
+            <td class="px-4 py-2">${formatRupiah(row.QR || 0)}</td>
+            <td class="px-4 py-2">${formatRupiah(row.Cash || 0)}</td>
+            <td class="px-4 py-2">${row.Admin || '-'}</td>
+            <td class="px-4 py-2 text-gray-500">${row.Waktu || '-'}</td>
+          </tr>`;
+      });
+
+      const ctx = document.getElementById("chartRider").getContext("2d");
+      const riderNames = [...new Set(data.map(d => d["Nama Rider"]))];
+      const revenues = riderNames.map(r => data.filter(d => d["Nama Rider"] === r).reduce((a, b) => a + Number(b.Revenue || 0), 0));
+
+      if (window.chartInstance) window.chartInstance.destroy();
+      window.chartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: riderNames,
+          datasets: [{ label: 'Revenue per Rider', data: revenues, backgroundColor: 'rgba(99, 102, 241, 0.7)' }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadData);
+  </script>
+</body>
+</html>
